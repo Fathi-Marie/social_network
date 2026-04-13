@@ -1,0 +1,11 @@
+/target/
+/bin/
+
+# Maven
+/maven/
+.mvn/
+
+# Configuration files
+application.properties
+application-*.properties
+
