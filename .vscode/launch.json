@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SocialnetworkApplication<socialnetwork>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.socialnetwork.socialnetwork.SocialnetworkApplication",
+            "projectName": "socialnetwork",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
