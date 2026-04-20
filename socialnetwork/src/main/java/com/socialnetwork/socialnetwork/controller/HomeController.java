@@ -1,4 +1,4 @@
-package fr.isep.connect.controller;
+package com.socialnetwork.socialnetwork.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
