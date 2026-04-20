@@ -1,7 +1,5 @@
 package com.socialnetwork.socialnetwork.controller;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -16,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.socialnetwork.socialnetwork.business.interfaces.service.IMailService;
-import com.socialnetwork.socialnetwork.business.interfaces.service.ITokenService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IUserService;
 import com.socialnetwork.socialnetwork.business.utils.Utils;
-import com.socialnetwork.socialnetwork.entity.Token;
 import com.socialnetwork.socialnetwork.entity.User;
 import com.socialnetwork.socialnetwork.enums.UserRole;
 
@@ -32,11 +28,9 @@ import jakarta.servlet.http.HttpSession;
 public class UserController {
 	private final IUserService userService;
 	private final IMailService mailService;
-	private final ITokenService tokenService;
-	public UserController(IUserService userService, IMailService mailService, ITokenService tokenService) {
+	public UserController(IUserService userService, IMailService mailService) {
 		this.userService = userService;
 		this.mailService = mailService;
-		this.tokenService = tokenService;
 	}
 
     @GetMapping({"/", "/accueil"})
@@ -69,13 +63,11 @@ public class UserController {
 		
 		else if(!userLogin.getBody().getIsVerified()) {
             String code = UUID.randomUUID().toString();
-			
+
 			HttpSession session = request.getSession(true);
             session.setAttribute("userTokenId", userLogin.getBody().getId());
             session.setAttribute("userEmail", userLogin.getBody().getEmail());
-            
-            this.tokenService.create(code, userLogin.getBody());
-			
+
 			this.mailService.sendConfirmationAccountMail(userLogin.getBody().getEmail(), code, userLogin.getBody().getFirstName());
 			
 			model.addAttribute("information", "Un mail de confirmation de création de compte à était envoyé sur votre adresse mail.");
@@ -133,9 +125,7 @@ public class UserController {
 			HttpSession session = request.getSession(true);
             session.setAttribute("userTokenId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
-           
-            this.tokenService.create(code, userSave.getBody());
-			
+
 			this.mailService.sendConfirmationAccountMail(email, code, user.getFirstName());
 			model.addAttribute("information", "Un mail de confirmation de création de compte à était envoyé sur votre adresse mail.");
 			model.addAttribute("user", user);
@@ -165,15 +155,6 @@ public class UserController {
 		
 		String userID =   userObject.toString();
 		
-		ResponseEntity<Token> token = this.tokenService.getToken(UUID.fromString(userID));
-		if(token.getStatusCode() != HttpStatusCode.valueOf(200)) {
-			return "accueil";
-		}
-		
-		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
-		if(!token.getBody().getValue().equals(code) || token.getBody().getExpirationDate().isBefore(now.toLocalDateTime())) {
-			return "accueil";
-		}
 		this.userService.update(UUID.fromString(userID));
 		
 		session.setAttribute("userId", userID);
@@ -222,8 +203,6 @@ public class UserController {
         session.setAttribute("userTokenId", existUser.getBody().getId());
         session.setAttribute("userEmail", existUser.getBody().getEmail());
        
-        this.tokenService.create(code, existUser.getBody());
-		
 		this.mailService.sendForgotPassword(existUser.getBody().getEmail(), code, existUser.getBody().getFirstName());
 		model.addAttribute("information", "Un mail permettant de modifier votre mot de passe a été envoyé sur votre adresse mail.");
 		model.addAttribute("user", user);
@@ -246,17 +225,6 @@ public class UserController {
 		}
 		
 		String userID =   userObject.toString();
-		
-		ResponseEntity<Token> token = this.tokenService.getToken(UUID.fromString(userID));
-		if(token.getStatusCode() != HttpStatusCode.valueOf(200)) {
-			return "accueil";
-		}
-
-		
-		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
-		if(!token.getBody().getValue().equals(code) || token.getBody().getExpirationDate().isBefore(now.toLocalDateTime())) {
-			return "accueil";
-		}
 		
 		return "forgotpassword";
 	}
