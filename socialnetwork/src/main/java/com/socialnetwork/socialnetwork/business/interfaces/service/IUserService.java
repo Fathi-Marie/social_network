@@ -20,4 +20,5 @@ public interface IUserService {
 
 	ResponseEntity<User> updatePassword(UUID userID, String password);
 
+	ResponseEntity<User> changePassword(UUID userId, String oldPassword, String newPassword);
 }
