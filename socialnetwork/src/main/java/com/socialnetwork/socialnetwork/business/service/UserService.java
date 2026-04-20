@@ -2,6 +2,7 @@ package com.socialnetwork.socialnetwork.business.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Service;
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IUserRepository;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IUserService;
 import com.socialnetwork.socialnetwork.entity.User;
-
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class UserService implements IUserService{
@@ -32,23 +31,43 @@ public class UserService implements IUserService{
 				.map(User::getUsername)
 				.orElse("");
 	}
+	
+	@Override
+	public ResponseEntity<User> getUserByEmail(String email) {
+		Optional<User> user = repository.findByEmail(email);
+		if (email != "" && !user.isPresent()) {
+			return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<User>(user.get(), HttpStatus.OK);
+	}
+	
 
 	@Override
-	public User create(User user) {
+	public ResponseEntity<User> create(User user) {
 		if (user.getUsername() != null && repository.findByUsername(user.getUsername()).isPresent()) {
-			throw new IllegalArgumentException("Username already exists");
+			return new ResponseEntity<User>(HttpStatus.CONFLICT);
+		}
+		
+		if (user.getEmail() != null && repository.findByEmail(user.getEmail()).isPresent()) {
+			return new ResponseEntity<User>(HttpStatus.CONFLICT);
 		}
 
 		if (user.getPasswordHash() != null && !user.getPasswordHash().isEmpty()) {
 			user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
 		}
 
-		return repository.save(user);
+		User saveUser = repository.save(user);
+		
+		return new ResponseEntity<>(
+			      saveUser, 
+			      HttpStatus.OK);
 	}
 	
 	@Override
 	public ResponseEntity<User> getUser(User user) {
 		Optional<User> userLogin = null;
+		System.out.println(user.getEmail());
 		if (user.getEmail() != null) {
 			userLogin = repository.findByEmail(user.getEmail());
 			if(!userLogin.isPresent()) {
@@ -74,6 +93,36 @@ public class UserService implements IUserService{
 	@Override
 	public List<User> findAllUsers() {
 		return repository.findAll();
+	}
+
+	@Override
+	public ResponseEntity<User> update(UUID userID) {
+		Optional<User> existingUser = repository.findById(userID);
+		
+		if(existingUser.isPresent()) {
+			existingUser.get().setIsVerified(true);
+			
+			repository.save(existingUser.get());
+		}
+		
+		
+		return new ResponseEntity<>(
+			      HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<User> updatePassword(UUID userID, String password) {
+		Optional<User> existingUser = repository.findById(userID);
+		
+		if(existingUser.isPresent()) {
+			existingUser.get().setPasswordHash(passwordEncoder.encode(password));
+			
+			repository.save(existingUser.get());
+		}
+		
+		
+		return new ResponseEntity<>(
+			      HttpStatus.OK);
 	}
     
 }
