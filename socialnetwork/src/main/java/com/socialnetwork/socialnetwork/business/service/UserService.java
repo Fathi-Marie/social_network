@@ -49,10 +49,8 @@ public class UserService implements IUserService{
 	@Override
 	public ResponseEntity<User> getUser(User user) {
 		Optional<User> userLogin = null;
-		System.out.println(user.getEmail());
 		if (user.getEmail() != null) {
 			userLogin = repository.findByEmail(user.getEmail());
-			System.out.println(userLogin.isPresent());
 			if(!userLogin.isPresent()) {
 				return new ResponseEntity<User>(
 					      HttpStatus.NOT_FOUND);
