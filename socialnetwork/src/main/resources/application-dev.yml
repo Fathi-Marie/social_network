@@ -2,6 +2,6 @@ spring:
   mail:
     host: smtp-relay.brevo.com
     username: 9edc3f001@smtp-brevo.com 
-    password: xsmtpsib-0e13b76d6aa594ee10f1d5feeac2da772ad87e3a75bd9de2bf624c21407bbe9f-xeyg2Y1KqMeKX9ND
+    password: xsmtpsib-0e13b76d6aa594ee10f1d5feeac2da772ad87e3a75bd9de2bf624c21407bbe9f-DVqD2FXYJV3TA4Hv
 
 front-base-url: http://localhost:8080
