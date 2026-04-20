@@ -1,5 +1,9 @@
 package com.socialnetwork.socialnetwork.controller;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatusCode;
@@ -7,14 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.socialnetwork.socialnetwork.business.interfaces.service.IMailService;
+import com.socialnetwork.socialnetwork.business.interfaces.service.ITokenService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IUserService;
 import com.socialnetwork.socialnetwork.business.service.MailService;
 import com.socialnetwork.socialnetwork.business.utils.Utils;
+import com.socialnetwork.socialnetwork.entity.Token;
 import com.socialnetwork.socialnetwork.entity.User;
 import com.socialnetwork.socialnetwork.enums.UserRole;
 
@@ -27,12 +34,14 @@ import jakarta.servlet.http.HttpSession;
 public class UserController {
 	private final IUserService userService;
 	private final IMailService mailService;
-	public UserController(IUserService userService) {
+	private final ITokenService tokenService;
+	public UserController(IUserService userService, IMailService mailService, ITokenService tokenService) {
 		this.userService = userService;
-		this.mailService = new MailService();
+		this.mailService = mailService;
+		this.tokenService = tokenService;
 	}
-	
-	@GetMapping({"/", "/accueil"})
+
+    @GetMapping({"/", "/accueil"})
     public String showHomePage(Model model) {
 		model.addAttribute("name", this.userService.getName());
         return "accueil";
@@ -43,9 +52,51 @@ public class UserController {
 		model.addAttribute("user", new User());
 		return "register";
 	}
+	
+	@GetMapping("/login")
+	public String showLoginForm(Model model) {
+		model.addAttribute("user", new User());
+		return "login";
+	}
+	
+	@PostMapping("/login")
+	public String loginUser(HttpServletRequest request, User user, Model model) {
+		ResponseEntity<User> userLogin = userService.getUser(user);
+		
+		if(userLogin.getStatusCode() == HttpStatusCode.valueOf(404)) {
+			model.addAttribute("error", "Email ou le Mot de passe incorrect");
+			model.addAttribute("user", user);
+			return "login";
+		}
+		
+		else if(!userLogin.getBody().getIsVerified()) {
+            String code = UUID.randomUUID().toString();
+			
+			HttpSession session = request.getSession(true);
+            session.setAttribute("userTokenId", userLogin.getBody().getId());
+            session.setAttribute("userEmail", userLogin.getBody().getEmail());
+            
+            this.tokenService.create(code, userLogin.getBody());
+			
+			this.mailService.sendConfirmationAccountMail(userLogin.getBody().getEmail(), code, userLogin.getBody().getFirstName());
+			
+			model.addAttribute("information", "Un mail de confirmation de création de compte à était envoyé sur votre adresse mail.");
+			model.addAttribute("user", user);
+
+			return "login";
+		}
+		
+		else {
+			HttpSession session = request.getSession(true);
+            session.setAttribute("userId", userLogin.getBody().getId());
+            session.setAttribute("userEmail", userLogin.getBody().getEmail());
+
+            return "redirect:/accueil";
+		}
+	}
 
 	@PostMapping("/register")
-	public String registerUser(User user, Model model) {
+	public String registerUser(HttpServletRequest request, User user, Model model) {
 		// email domain validation for ISEP
 		String email = user.getEmail() != null ? user.getEmail().trim().toLowerCase() : "";
 
@@ -71,14 +122,67 @@ public class UserController {
 		}
 
 		try {
-			userService.create(user);
-			this.mailService.sendConfirmationAccountMail(email);
-			return "redirect:/users";
+			ResponseEntity<User> userSave = userService.create(user);
+			
+			if(userSave.getStatusCode() != HttpStatusCode.valueOf(200)) {
+				model.addAttribute("error", "Utilisateur déja existant");
+				model.addAttribute("user", user);
+				return "register";
+			}
+			
+			String code = UUID.randomUUID().toString();
+			
+			HttpSession session = request.getSession(true);
+            session.setAttribute("userTokenId", user.getId());
+            session.setAttribute("userEmail", user.getEmail());
+           
+            this.tokenService.create(code, userSave.getBody());
+			
+			this.mailService.sendConfirmationAccountMail(email, code, user.getFirstName());
+			model.addAttribute("information", "Un mail de confirmation de création de compte à était envoyé sur votre adresse mail.");
+			model.addAttribute("user", user);
+
+			return "register";
 		} catch (IllegalArgumentException ex) {
 			model.addAttribute("error", ex.getMessage());
 			model.addAttribute("user", user);
 			return "register";
 		}
+	}
+	
+	
+	@GetMapping("/user/{code}/confirm")
+	public String showConfirmLinkPage(HttpServletRequest request, @PathVariable("code") String code) {
+		HttpSession session = request.getSession(false);
+		
+		if(session == null) {
+			return "accueil";
+		}
+		
+		Object userObject =   session.getAttribute("userTokenId");
+
+		if(userObject == null) {
+			return "accueil";
+		}
+		
+		String userID =   userObject.toString();
+		
+		ResponseEntity<Token> token = this.tokenService.getToken(UUID.fromString(userID));
+		if(token.getStatusCode() != HttpStatusCode.valueOf(200)) {
+			return "accueil";
+		}
+		
+		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
+		if(!token.getBody().getValue().equals(code) || token.getBody().getExpirationDate().isBefore(now.toLocalDateTime())) {
+			return "accueil";
+		}
+		this.userService.update(UUID.fromString(userID));
+		
+		session.setAttribute("userId", userID);
+		
+		session.removeAttribute("userTokenId");
+		
+		return "confirmRegister";
 	}
 
 	@GetMapping("/users")
@@ -97,15 +201,103 @@ public class UserController {
 		}
 		return ResponseEntity.ok(java.util.Map.of("exists", exists));
 	}
-
+	
 	@GetMapping("/forgotpassword/email")
 	public String showForgotPasswordMailForm(Model model) {
-		System.out.println("ok");
+		model.addAttribute("user", new User());
 		return "emailForgotPassword";
 	}
 	
 	@PostMapping("/forgotpassword/email")
-	public String ForgotPasswordMailForm(HttpServletRequest request, String email) {
+	public String ForgotPasswordMailForm(HttpServletRequest request, User user, Model model) {
+		ResponseEntity<User> existUser = this.userService.getUserByEmail(user.getEmail());
+		
+		if(existUser.getStatusCode() != HttpStatusCode.valueOf(200)) {
+			model.addAttribute("error", "Utilisateur non existant");
+			model.addAttribute("user", user);
+			return "emailForgotPassword";
+		}
+		
+		String code = UUID.randomUUID().toString();
+		
+		HttpSession session = request.getSession(true);
+        session.setAttribute("userTokenId", existUser.getBody().getId());
+        session.setAttribute("userEmail", existUser.getBody().getEmail());
+       
+        this.tokenService.create(code, existUser.getBody());
+		
+		this.mailService.sendForgotPassword(existUser.getBody().getEmail(), code, existUser.getBody().getFirstName());
+		model.addAttribute("information", "Un mail permettant de modifier votre mot de passe à était envoyé sur votre adresse mail.");
+		model.addAttribute("user", user);
+		
 		return "emailForgotPassword";
+	}
+	
+	@GetMapping("/user/{code}/forgotpassword")
+	public String showConfirmLinkPageForForgotPassword(HttpServletRequest request, @PathVariable("code") String code) {
+		HttpSession session = request.getSession(false);
+		
+		if(session == null) {
+			return "accueil";
+		}
+
+		Object userObject =   session.getAttribute("userTokenId");
+
+		if(userObject == null) {
+			return "accueil";
+		}
+		
+		String userID =   userObject.toString();
+		
+		ResponseEntity<Token> token = this.tokenService.getToken(UUID.fromString(userID));
+		if(token.getStatusCode() != HttpStatusCode.valueOf(200)) {
+			return "accueil";
+		}
+
+		
+		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
+		if(!token.getBody().getValue().equals(code) || token.getBody().getExpirationDate().isBefore(now.toLocalDateTime())) {
+			return "accueil";
+		}
+		
+		return "forgotpassword";
+	}
+	
+	@PostMapping("/forgotpassword/changepassword")
+	public String changePassword(HttpServletRequest request, Model model, @RequestParam("passwordHash") String passwordHash, @RequestParam("confirmpasswordHash") String confirmpasswordHash) {
+		HttpSession session = request.getSession(false);
+		
+		if(session == null) {
+			return "accueil";
+		}
+
+		Object userObject =   session.getAttribute("userTokenId");
+
+		if(userObject == null) {
+			return "accueil";
+		}
+		
+		if(!passwordHash.equals(confirmpasswordHash)) {
+			model.addAttribute("error", "Les deux mots de passes doivent être identiques");
+			return "forgotpassword";
+		}
+		
+		boolean passwordVerification = Utils.VerifyPassword(passwordHash);
+		
+		if(!passwordVerification) {
+			model.addAttribute("error", "Le mot de passe doit contenir au moins 8 caractères, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial");
+			return "forgotpassword";
+		}
+
+		String userID =   userObject.toString();
+		
+        this.userService.updatePassword(UUID.fromString(userID), passwordHash);
+		
+		session.setAttribute("userId", userID);
+		
+		session.removeAttribute("userTokenId");
+		model.addAttribute("information", "Votre mot de passe à bien été modifié");
+		
+		return "forgotpassword";
 	}
 }
