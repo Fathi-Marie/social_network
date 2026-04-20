@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.socialnetwork.socialnetwork.business.interfaces.service.IMailService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IUserService;
+import com.socialnetwork.socialnetwork.business.service.MailService;
 import com.socialnetwork.socialnetwork.business.utils.Utils;
 import com.socialnetwork.socialnetwork.entity.User;
 import com.socialnetwork.socialnetwork.enums.UserRole;
@@ -24,8 +26,10 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
 	private final IUserService userService;
+	private final IMailService mailService;
 	public UserController(IUserService userService) {
 		this.userService = userService;
+		this.mailService = new MailService();
 	}
 	
 	@GetMapping({"/", "/accueil"})
@@ -38,31 +42,6 @@ public class UserController {
 	public String showRegisterForm(Model model) {
 		model.addAttribute("user", new User());
 		return "register";
-	}
-	
-	@GetMapping("/login")
-	public String showLoginForm(Model model) {
-		model.addAttribute("user", new User());
-		System.out.println("ok showLoginForm");
-		return "login";
-	}
-	
-	@PostMapping("/login")
-	public String loginUser(HttpServletRequest request, User user, Model model) {
-		ResponseEntity<User> userLogin = userService.getUser(user);
-		
-		if(userLogin.getStatusCode() == HttpStatusCode.valueOf(200)) {
-			HttpSession session = request.getSession(true);
-            session.setAttribute("userId", userLogin.getBody().getId());
-            session.setAttribute("userEmail", userLogin.getBody().getEmail());
-
-            return "redirect:/accueil";
-		}
-
-		model.addAttribute("error", "Email ou le Mot de passe incorrect");
-		model.addAttribute("user", user);
-
-		return "login";
 	}
 
 	@PostMapping("/register")
@@ -93,6 +72,7 @@ public class UserController {
 
 		try {
 			userService.create(user);
+			this.mailService.sendConfirmationAccountMail(email);
 			return "redirect:/users";
 		} catch (IllegalArgumentException ex) {
 			model.addAttribute("error", ex.getMessage());
