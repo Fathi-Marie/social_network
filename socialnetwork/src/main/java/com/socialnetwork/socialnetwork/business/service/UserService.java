@@ -22,15 +22,6 @@ public class UserService implements IUserService{
 		this.repository = repository;
 		this.passwordEncoder = passwordEncoder;
 	}
-    
-	@Override
-	public String getName() {
-		return repository.findAll()
-				.stream()
-				.findFirst()
-				.map(User::getUsername)
-				.orElse("");
-	}
 	
 	@Override
 	public ResponseEntity<User> getUserByEmail(String email) {
@@ -143,6 +134,18 @@ public class UserService implements IUserService{
 		
 		return new ResponseEntity<>(
 			      HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<User> getUserById(UUID userID) {
+		Optional<User> user = repository.findById(userID);
+		
+		if(user.isPresent()) {
+			 return new ResponseEntity<>(
+				      HttpStatus.OK);
+		}
+		return new ResponseEntity<User>(
+			      HttpStatus.NOT_FOUND);
 	}
     
 }
