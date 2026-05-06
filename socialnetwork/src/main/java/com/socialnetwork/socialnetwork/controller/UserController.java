@@ -53,13 +53,11 @@ public class UserController {
 
     @GetMapping({"/", "/accueil"})
     public String showHomePage(Model model) {
-		model.addAttribute("name", this.userService.getName());
         return "accueil";
     }
 
 	@GetMapping("/feed")
 	public String showFeed(Model model, HttpServletRequest request) {
-		model.addAttribute("name", this.userService.getName());
 		// load posts ordered by createdAt desc
 		List<Post> posts = postRepository.findAll();
 		posts.sort(Comparator.comparing(Post::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
