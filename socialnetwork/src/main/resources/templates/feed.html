@@ -62,20 +62,15 @@
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <div>
                                     <strong th:text="${post.author.username}">Auteur</strong>
-                                    <div style="display:flex; gap:8px; align-items:center;">
+                                    <div style="font-size:0.85rem; color:var(--text-dim);" th:text="${post.createdAt}">date</div>
+                                </div>
+                                <div style="display:flex; gap:8px; align-items:center;">
                                     <div style="font-size:0.85rem; color:var(--text-dim);" th:text="${post.visibilityType}">VIS</div>
                                     <button type="button" class="btn-icon" th:if="${loggedUserId != null and loggedUserId.toString() == post.author.id.toString()}" th:attr="data-post-id=${post.id}" title="Modifier" style="border:none; background:transparent; cursor:pointer;">
                                         <i data-lucide="edit-2"></i>
                                     </button>
                                     <button type="button" class="btn-icon btn-delete" th:if="${loggedUserId != null and loggedUserId.toString() == post.author.id.toString()}" th:attr="data-post-id=${post.id}" title="Supprimer" style="border:none; background:transparent; cursor:pointer; color:var(--danger);">
                                         <i data-lucide="trash-2"></i>
-                                    </button>
-                                </div>
-                                </div>
-                                <div style="display:flex; gap:8px; align-items:center;">
-                                    <div style="font-size:0.85rem; color:var(--text-dim);" th:text="${post.visibilityType}">VIS</div>
-                                    <button type="button" class="btn-icon" th:if="${loggedUserId != null and loggedUserId.toString() == post.author.id.toString()}" th:attr="data-post-id=${post.id}" title="Modifier" style="border:none; background:transparent; cursor:pointer;">
-                                        <i data-lucide="edit-2"></i>
                                     </button>
                                 </div>
                             </div>
