@@ -96,4 +96,17 @@ document.addEventListener('DOMContentLoaded', function(){
         }).catch(function(err){ console.error(err); alert('Erreur réseau'); });
     });
 
+    const postVideo = document.getElementById('postVideo');
+	const postVideoLink = document.getElementById('postVideoUrl');
+	const postImage = document.getElementById('postImage');
+	const postImageLink = document.getElementById('postImageUrl');
+	
+	postVideo.onclick = function () {
+                    postVideoLink.click()
+                }
+                
+	postImage.onclick = function () {
+                    postImageLink.click()
+                }
+
 });
