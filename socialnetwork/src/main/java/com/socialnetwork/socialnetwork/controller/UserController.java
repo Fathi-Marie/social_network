@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IPostRepository;
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IUserRepository;
+import com.socialnetwork.socialnetwork.business.interfaces.service.IFollowService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IMailService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IPrivacySettingsService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IProfileService;
@@ -29,11 +30,12 @@ import com.socialnetwork.socialnetwork.business.interfaces.service.ITokenService
 import com.socialnetwork.socialnetwork.business.interfaces.service.IUserService;
 import com.socialnetwork.socialnetwork.business.utils.FileUpload;
 import com.socialnetwork.socialnetwork.business.utils.Utils;
-
+import com.socialnetwork.socialnetwork.dto.UserOtherProfileDto;
 import com.socialnetwork.socialnetwork.dto.UserProfileDto;
 import com.socialnetwork.socialnetwork.dto.UserRequestDto;
 import com.socialnetwork.socialnetwork.entity.PrivacySettings;
 import com.socialnetwork.socialnetwork.entity.Profile;
+import com.socialnetwork.socialnetwork.entity.Follow;
 import com.socialnetwork.socialnetwork.entity.Post;
 
 import com.socialnetwork.socialnetwork.entity.Token;
@@ -54,13 +56,15 @@ public class UserController {
 	private final IProfileService profileService;
 	private final IPrivacySettingsService privacySettingsService;
 	private final IPostRepository postRepository;
-	public UserController(IUserService userService, IMailService mailService, IPostRepository postRepository, ITokenService tokenService, IProfileService profileService, IPrivacySettingsService privacySettingsService) {
+	private final IFollowService followService;
+	public UserController(IUserService userService, IMailService mailService, IFollowService followService, IPostRepository postRepository, ITokenService tokenService, IProfileService profileService, IPrivacySettingsService privacySettingsService) {
 		this.userService = userService;
 		this.mailService = mailService;
 		this.tokenService = tokenService;
 		this.profileService = profileService;
 		this.privacySettingsService = privacySettingsService;
 		this.postRepository = postRepository;
+		this.followService = followService;
 	}
 
     @GetMapping({"/", "/accueil"})
@@ -87,58 +91,58 @@ public class UserController {
 
 		return "feed";
 	}
-    
+
 	@GetMapping("/register")
 	public String showRegisterForm(HttpServletRequest request, Model model) {
 		Object userIsConnect = Utils.validPage(request, false);
+		model.addAttribute("isConnect", userIsConnect);
 		if(userIsConnect != null) {
-			model.addAttribute("isConnect", userIsConnect);
 			return "accueil";
 		}
-		
+
 		model.addAttribute("user", new User());
 		return "register";
 	}
-	
+
 	@GetMapping("/login")
 	public String showLoginForm(HttpServletRequest request, Model model) {
 		Object userIsConnect = Utils.validPage(request, false);
+		model.addAttribute("isConnect", userIsConnect);
 		if(userIsConnect != null) {
-			model.addAttribute("isConnect", userIsConnect);
 			return "accueil";
 		}
-		
+
 		model.addAttribute("user", new User());
 		return "login";
 	}
-	
+
 	@PostMapping("/login")
 	public String loginUser(HttpServletRequest request, User user, Model model) {
 		ResponseEntity<User> userLogin = userService.getUser(user);
-		
+
 		if(userLogin.getStatusCode() == HttpStatusCode.valueOf(404)) {
 			model.addAttribute("error", "Email ou le Mot de passe incorrect");
 			model.addAttribute("user", user);
 			return "login";
 		}
-		
+
 		else if(!userLogin.getBody().getIsVerified()) {
             String code = UUID.randomUUID().toString();
-			
+
 			HttpSession session = request.getSession(true);
             session.setAttribute("userTokenId", userLogin.getBody().getId());
             session.setAttribute("userEmail", userLogin.getBody().getEmail());
-            
+
             this.tokenService.create(code, userLogin.getBody());
-			
+
 			this.mailService.sendConfirmationAccountMail(userLogin.getBody().getEmail(), code, userLogin.getBody().getFirstName());
-			
+
 			model.addAttribute("information", "Un mail de confirmation de création de compte à était envoyé sur votre adresse mail.");
 			model.addAttribute("user", user);
 
 			return "login";
 		}
-		
+
 		else {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("userId", userLogin.getBody().getId());
@@ -165,9 +169,9 @@ public class UserController {
 			model.addAttribute("user", user);
 			return "register";
 		}
-		
+
 		boolean passwordVerification = Utils.VerifyPassword(user.getPasswordHash());
-		
+
 		if(!passwordVerification) {
 			model.addAttribute("error", "Le mot de passe doit contenir au moins 8 caractères, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial");
 			model.addAttribute("user", user);
@@ -178,21 +182,21 @@ public class UserController {
 			ResponseEntity<User> userSave = userService.create(user);
 			ResponseEntity<Profile> profileSave = this.profileService.create(userSave.getBody());
 			ResponseEntity<PrivacySettings> privacySettingsSave = this.privacySettingsService.create(userSave.getBody());
-			
+
 			if(userSave.getStatusCode() != HttpStatusCode.valueOf(200)) {
 				model.addAttribute("error", "Utilisateur déja existant");
 				model.addAttribute("user", user);
 				return "register";
 			}
-			
+
 			String code = UUID.randomUUID().toString();
-			
+
 			HttpSession session = request.getSession(true);
             session.setAttribute("userTokenId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
-           
+
             this.tokenService.create(code, userSave.getBody());
-			
+
 			this.mailService.sendConfirmationAccountMail(email, code, user.getFirstName());
 			model.addAttribute("information", "Un mail de confirmation de création de compte à était envoyé sur votre adresse mail.");
 			model.addAttribute("user", user);
@@ -214,11 +218,11 @@ public class UserController {
 		try {
 			UUID userId = UUID.fromString(session.getAttribute("userId").toString());
 			ResponseEntity<User> author = userService.getUserById(userId);
-			
+
 			if(author.getStatusCode() != HttpStatusCode.valueOf(200)) {
 				throw new IllegalArgumentException("User not found");
 			}
-			
+
 			Post post = new Post();
 			post.setAuthor(author.getBody());
 			post.setContent(content);
@@ -242,44 +246,46 @@ public class UserController {
 		}
 		return "redirect:/accueil";
 	}
-	
-	
+
+
 	@GetMapping("/user/{code}/confirm")
 	public String showConfirmLinkPage(HttpServletRequest request, @PathVariable("code") String code) {
 		HttpSession session = request.getSession(false);
-		
+
 		if(session == null) {
 			return "accueil";
 		}
-		
+
 		Object userObject =   session.getAttribute("userTokenId");
 
 		if(userObject == null) {
 			return "accueil";
 		}
-		
+
 		String userID =   userObject.toString();
-		
+
 		ResponseEntity<Token> token = this.tokenService.getToken(UUID.fromString(userID));
 		if(token.getStatusCode() != HttpStatusCode.valueOf(200)) {
 			return "accueil";
 		}
-		
+
 		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
 		if(!token.getBody().getValue().equals(code) || token.getBody().getExpirationDate().isBefore(now.toLocalDateTime())) {
 			return "accueil";
 		}
 		this.userService.update(UUID.fromString(userID));
-		
+
 		session.setAttribute("userId", userID);
-		
+
 		session.removeAttribute("userTokenId");
-		
+
 		return "confirmRegister";
 	}
 
 	@GetMapping("/users")
-	public String listUsers(Model model) {
+	public String listUsers(HttpServletRequest request, Model model) {
+		Object userIsConnect = Utils.validPage(request, false);
+		model.addAttribute("isConnect", userIsConnect);
 		model.addAttribute("users", userService.findAllUsers());
 		return "users";
 	}
@@ -294,7 +300,7 @@ public class UserController {
 		}
 		return ResponseEntity.ok(java.util.Map.of("exists", exists));
 	}
-	
+
 	@GetMapping("/forgotpassword/email")
 	public String showForgotPasswordMailForm(HttpServletRequest request, Model model) {
 		Object userIsConnect = Utils.validPage(request, false);
@@ -302,40 +308,40 @@ public class UserController {
 			model.addAttribute("isConnect", userIsConnect);
 			return "accueil";
 		}
-		
+
 		model.addAttribute("user", new User());
 		return "emailForgotPassword";
 	}
-	
+
 	@PostMapping("/forgotpassword/email")
 	public String ForgotPasswordMailForm(HttpServletRequest request, User user, Model model) {
 		ResponseEntity<User> existUser = this.userService.getUserByEmail(user.getEmail());
-		
+
 		if(existUser.getStatusCode() != HttpStatusCode.valueOf(200)) {
 			model.addAttribute("error", "Utilisateur non existant");
 			model.addAttribute("user", user);
 			return "emailForgotPassword";
 		}
-		
+
 		String code = UUID.randomUUID().toString();
-		
+
 		HttpSession session = request.getSession(true);
         session.setAttribute("userTokenId", existUser.getBody().getId());
         session.setAttribute("userEmail", existUser.getBody().getEmail());
-       
+
         this.tokenService.create(code, existUser.getBody());
-		
+
 		this.mailService.sendForgotPassword(existUser.getBody().getEmail(), code, existUser.getBody().getFirstName());
 		model.addAttribute("information", "Un mail permettant de modifier votre mot de passe a été envoyé sur votre adresse mail.");
 		model.addAttribute("user", user);
-		
+
 		return "emailForgotPassword";
 	}
-	
+
 	@GetMapping("/user/{code}/forgotpassword")
 	public String showConfirmLinkPageForForgotPassword(HttpServletRequest request, @PathVariable("code") String code) {
 		HttpSession session = request.getSession(false);
-		
+
 		if(session == null) {
 			return "accueil";
 		}
@@ -345,27 +351,27 @@ public class UserController {
 		if(userObject == null) {
 			return "accueil";
 		}
-		
+
 		String userID =   userObject.toString();
-		
+
 		ResponseEntity<Token> token = this.tokenService.getToken(UUID.fromString(userID));
 		if(token.getStatusCode() != HttpStatusCode.valueOf(200)) {
 			return "accueil";
 		}
 
-		
+
 		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
 		if(!token.getBody().getValue().equals(code) || token.getBody().getExpirationDate().isBefore(now.toLocalDateTime())) {
 			return "accueil";
 		}
-		
+
 		return "forgotpassword";
 	}
-	
+
 	@PostMapping("/forgotpassword/changepassword")
 	public String changePassword(HttpServletRequest request, Model model, @RequestParam("passwordHash") String passwordHash, @RequestParam("confirmpasswordHash") String confirmpasswordHash) {
 		HttpSession session = request.getSession(false);
-		
+
 		if(session == null) {
 			return "accueil";
 		}
@@ -375,42 +381,42 @@ public class UserController {
 		if(userObject == null) {
 			return "accueil";
 		}
-		
+
 		if(!passwordHash.equals(confirmpasswordHash)) {
 			model.addAttribute("error", "Les deux mots de passes doivent être identiques");
 			return "forgotpassword";
 		}
-		
+
 		boolean passwordVerification = Utils.VerifyPassword(passwordHash);
-		
+
 		if(!passwordVerification) {
 			model.addAttribute("error", "Le mot de passe doit contenir au moins 8 caractères, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial");
 			return "forgotpassword";
 		}
 
 		String userID =   userObject.toString();
-		
+
         this.userService.updatePassword(UUID.fromString(userID), passwordHash);
-		
+
 		session.setAttribute("userId", userID);
-		
+
 		session.removeAttribute("userTokenId");
 		model.addAttribute("information", "Votre mot de passe à bien été modifié");
-		
+
 		return "forgotpassword";
 	}
-	
+
 	@GetMapping("/changePassword")
 	public String showChangePasswordForm(HttpServletRequest request, Model model) {
 		Object userIsConnect = Utils.validPage(request, true);
+		model.addAttribute("isConnect", userIsConnect);
 		if(userIsConnect == null) {
-			model.addAttribute("isConnect", userIsConnect);
 			return "accueil";
 		}
-		
+
 		return "changePassword";
 	}
-	
+
 	@PostMapping("/changePassword")
 	public String changePassword(HttpServletRequest request, Model model, @RequestParam("oldpasswordHash") String oldpasswordHash, @RequestParam("passwordHash") String passwordHash, @RequestParam("confirmpasswordHash") String confirmpasswordHash) {
         HttpSession session = request.getSession(false);
@@ -418,59 +424,59 @@ public class UserController {
 			return "accueil";
 		}
 		Object userObject =   session.getAttribute("userId");
-		
+
 		if(userObject == null) {
 			return "accueil";
 		}
-		
+
 		if(!passwordHash.equals(confirmpasswordHash)) {
 			model.addAttribute("error", "Les deux mots de passes doivent être identiques");
 			return "changePassword";
 		}
-		
+
 		boolean passwordVerification = Utils.VerifyPassword(passwordHash);
-		
+
 		if(!passwordVerification) {
 			model.addAttribute("error", "Le mot de passe doit contenir au moins 8 caractères, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial");
 			return "changePassword";
 		}
-		
+
 		String userID =   userObject.toString();
-		
+
 		ResponseEntity<User> user = this.userService.changePassword(UUID.fromString(userID), oldpasswordHash, confirmpasswordHash);
-		
+
 		if(user.getStatusCode() != HttpStatusCode.valueOf(200)) {
 			model.addAttribute("error", "L'ancien mot de passe est incorrect");
 			return "changePassword";
 		}
-		
+
 		model.addAttribute("information", "Votre mot de passe a bien été modifié");
-		
+
 		return "changePassword";
 	}
-	
+
 	@GetMapping("/logout")
 	public String logOut(HttpServletRequest request, Model model) {
 		HttpSession session = request.getSession(false);
-		
+
 		if (session != null) {
             session.invalidate();
         }
-		
+
 		return "accueil";
 	}
-	
+
 	@GetMapping("/profil")
 	public String showUserProfil(HttpServletRequest request, Model model) {
 		Object userIsConnect = Utils.validPage(request, true);
+		model.addAttribute("isConnect", userIsConnect);
 		if(userIsConnect == null) {
-			model.addAttribute("isConnect", userIsConnect);
 			return "accueil";
 		}
-		
+
 		ResponseEntity<User> user = this.userService.getUserById(UUID.fromString(userIsConnect.toString()));
 		ResponseEntity<Profile> userProfile = this.profileService.getUserProfileByUserID(user.getBody());
-		
+
 		UserProfileDto userProfileDto = new UserProfileDto();
 		userProfileDto.setUser(user.getBody());
 		userProfileDto.setProfile(userProfile.getBody());
@@ -478,32 +484,31 @@ public class UserController {
 		model.addAttribute("userProfile", userProfileDto);
 		return "userProfile";
 	}
-	
+
 	@GetMapping("/editProfil")
 	public String showEditUserProfil(HttpServletRequest request, Model model) {
 		Object userIsConnect = Utils.validPage(request, true);
+		model.addAttribute("isConnect", userIsConnect);
 		if(userIsConnect == null) {
-			model.addAttribute("isConnect", userIsConnect);
 			return "accueil";
 		}
-		
+
 		ResponseEntity<User> user = this.userService.getUserById(UUID.fromString(userIsConnect.toString()));
 		ResponseEntity<Profile> userProfile = this.profileService.getUserProfileByUserID(user.getBody());
-		
+
 		UserProfileDto userProfileDto = new UserProfileDto();
 		userProfileDto.setUser(user.getBody());
 		userProfileDto.setProfile(userProfile.getBody());
 
 		model.addAttribute("userProfile", userProfileDto);
-		model.addAttribute("isConnect", userIsConnect);
 		return "editProfile";
 	}
-	
+
 	@PostMapping("/editProfil")
 	public String EditProfil(HttpServletRequest request, Model model, @ModelAttribute("userProfile") UserProfileDto userProfile,
             @RequestParam("profilePictureUrl") MultipartFile profilePicture,
             @RequestParam("coverPictureUrl") MultipartFile coverPicture) {
-		
+
 		Object userIsConnect = Utils.validPage(request, true);
 		model.addAttribute("isConnect", userIsConnect);
 		if(userIsConnect == null) {
@@ -515,24 +520,49 @@ public class UserController {
 		}
 		String uploadProfilePictureUrl =  "";
 		String uploadCoverPictureUrl = "";
-		
+
 		if(profilePicture != null && !profilePicture.isEmpty()) {
 			System.out.println("profile picture : " + profilePicture);
 			uploadProfilePictureUrl = FileUpload.UploadFile(profilePicture);
 		}
-		
+
 		if(coverPicture != null && !coverPicture.isEmpty()) {
 			System.out.println("profile picture : " + profilePicture);
 			uploadCoverPictureUrl = FileUpload.UploadFile(coverPicture);
 		}
-		
+
 		ResponseEntity<User> user = this.userService.updateUser(UUID.fromString(userIsConnect.toString()), userProfile.getUser(), uploadProfilePictureUrl, uploadCoverPictureUrl);
 		ResponseEntity<Profile> profile = this.profileService.updateProfile(user.getBody(), userProfile.getProfile());
-		
+
 		UserProfileDto  userProfileDto = new UserProfileDto();
 		userProfileDto.setUser(user.getBody());
 		userProfileDto.setProfile(profile.getBody());
 		model.addAttribute("information", "Vos informations ont bien été mise a jour");
 		return "editProfile";
+	}
+
+	@GetMapping("/profil/{id}")
+	public String showOtherUserProfil(HttpServletRequest request, Model model,  @PathVariable("id") String id) {
+		Object userIsConnect = Utils.validPage(request, true);
+		model.addAttribute("isConnect", userIsConnect);
+		if(userIsConnect == null) {
+			return "accueil";
+		}
+
+
+		ResponseEntity<User> user = this.userService.getUserById(UUID.fromString(id));
+		ResponseEntity<Profile> userProfile = this.profileService.getUserProfileByUserID(user.getBody());
+		ResponseEntity<PrivacySettings> privacySettings = this.privacySettingsService.getPrivacySettingsByUser(user.getBody());
+
+		UserOtherProfileDto userOtherProfileDto = new UserOtherProfileDto();
+		userOtherProfileDto.setUser(user.getBody());
+		userOtherProfileDto.setProfile(userProfile.getBody());
+		userOtherProfileDto.setPrivacySettings(privacySettings.getBody());
+
+		ResponseEntity<Follow> follow = this.followService.getFollow(UUID.fromString(userIsConnect.toString()), UUID.fromString(id));
+
+		model.addAttribute("isFollow", follow.getStatusCode() == HttpStatusCode.valueOf(200));
+		model.addAttribute("userProfile", userOtherProfileDto);
+		return "userViewProfile";
 	}
 }
