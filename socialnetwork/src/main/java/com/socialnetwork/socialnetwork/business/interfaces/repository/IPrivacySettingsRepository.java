@@ -13,4 +13,5 @@ import com.socialnetwork.socialnetwork.entity.User;
 public interface IPrivacySettingsRepository extends JpaRepository<PrivacySettings, UUID>{
     Optional<PrivacySettings> findByUser(User user);
 
+    Optional<PrivacySettings> findByUser_Id(UUID userID);
 }

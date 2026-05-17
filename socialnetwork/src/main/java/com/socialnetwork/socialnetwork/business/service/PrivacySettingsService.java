@@ -1,9 +1,11 @@
 package com.socialnetwork.socialnetwork.business.service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IPrivacySettingsRepository;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IPrivacySettingsService;
@@ -31,17 +33,39 @@ public class PrivacySettingsService implements IPrivacySettingsService{
 				savePrivacySettings, 
 			      HttpStatus.OK);
 	}
-
-		@Override
+	
+	@Override
 	public ResponseEntity<PrivacySettings> getPrivacySettingsByUser(User user) {
 		Optional<PrivacySettings> privacySettings = this.repository.findByUser(user);
-
+		
 		if(!privacySettings.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
+		
 		return new ResponseEntity<>(
-				privacySettings.get(),
+				privacySettings.get(), 
+			      HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<PrivacySettings> getPrivacySettingsByUserID(UUID userID) {
+		Optional<PrivacySettings> privacySettings = this.repository.findByUser_Id(userID);
+		
+		if(!privacySettings.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<>(
+				privacySettings.get(), 
+			      HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<PrivacySettings> savePrivacy(PrivacySettings privacySettings) {
+		PrivacySettings savePrivacySettings = this.repository.save(privacySettings);
+		
+		return new ResponseEntity<>(
+				savePrivacySettings, 
 			      HttpStatus.OK);
 	}
 }
