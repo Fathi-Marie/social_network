@@ -125,12 +125,14 @@ public class Post {
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
-    
-    public List<Media> getMedias() {
+
+	public List<Media> getMedias() {
 		return medias;
 	}
 
 	public void setMedias(List<Media> medias) {
 		this.medias = medias;
 	}
+    
+    
 }

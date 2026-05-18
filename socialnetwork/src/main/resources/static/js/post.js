@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function(){
     } else {
         console.warn('post.js: openBtn or modal not found; modal will not open');
     }
-
+    
     const postVideo = document.getElementById('postVideo');
 	const postVideoLink = document.getElementById('postVideoUrl');
 	const postImage = document.getElementById('postImage');
@@ -39,4 +39,5 @@ document.addEventListener('DOMContentLoaded', function(){
 	postImage.onclick = function () {
                     postImageLink.click()
                 }
+    
 });

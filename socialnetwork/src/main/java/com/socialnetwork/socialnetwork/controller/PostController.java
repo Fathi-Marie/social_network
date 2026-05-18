@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IPostRepository;
-import com.socialnetwork.socialnetwork.business.interfaces.repository.IUserRepository;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IMediaService;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IUserService;
 import com.socialnetwork.socialnetwork.business.utils.FileUpload;
@@ -42,12 +41,12 @@ public class PostController {
     private final IUserService userService;
     private final IMediaService mediaService;
 
-    public PostController(IPostRepository postRepository, IUserService userService, IMediaService mediaService)  {
+    public PostController(IPostRepository postRepository, IUserService userService, IMediaService mediaService) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.mediaService = mediaService;
     }
-
+    
     @PostMapping("/post")
 	public String handleCreatePost(HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
 		HttpSession session = request.getSession(false);
@@ -122,7 +121,7 @@ public class PostController {
 		}
 		return "accueil";
 	}
-    
+
     @GetMapping("/post/{id}")
     public ResponseEntity<?> getPost(@PathVariable("id") UUID id) {
         Optional<Post> opt = postRepository.findById(id);

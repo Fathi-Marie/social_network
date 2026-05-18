@@ -7,7 +7,7 @@
 	<link rel="stylesheet" th:href="@{/css/charteGraphique.css}">
 	<link rel="stylesheet" th:href="@{/css/header.css}">
 	<link rel="stylesheet" th:href="@{/css/editProfil.css}">
-	<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-dark">
 
@@ -36,21 +36,21 @@
 				<div class="photos-management">
 					<div class="cover-upload" id="coverTrigger">
 						<img id="coverPictureImg"
-						     type="image" th:src="@{${userProfile.user.coverPictureUrl}}"></img>
+							  type="image" th:src="@{${userProfile.user.coverPictureUrl}}"></img>
 						<div class="overlay"><i data-lucide="camera"></i> Modifier la bannière</div>
-						<input id="coverPictureUrl" type="file" name="coverPictureUrl"
-						       accept="image/*" style="visibility: hidden">
+							<input id="coverPictureUrl" type="file" name="coverPictureUrl"
+								   accept="image/*" style="visibility: hidden">
 					</div>
 
 					<div class="profile-pic-upload" id="profileTrigger">
 						<div class="avatar-circle">
 							<img id="profilePictureImg" type="image" th:src="@{${userProfile.user.profilePictureUrl}}"
-							     width="100" height="100"></img>
+								 width="100" height="100"></img>
 
 							<div class="overlay"><i data-lucide="camera"></i></div>
 						</div>
 						<input type="file"
-						       id="profilePictureUrl" name="profilePictureUrl" accept="image/*" style="visibility: hidden">
+							   id="profilePictureUrl" name="profilePictureUrl" accept="image/*" style="visibility: hidden">
 					</div>
 				</div>
 			</section>

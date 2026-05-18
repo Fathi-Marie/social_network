@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import com.socialnetwork.socialnetwork.entity.Post;
 
 public interface IPostRepository extends JpaRepository<Post, UUID> {
-
 	@Query(
 			  value = """
 			    SELECT p.*
@@ -41,4 +40,5 @@ public interface IPostRepository extends JpaRepository<Post, UUID> {
 			  nativeQuery = true
 			)
 	List<Post> findByVisibilityPublic();
+
 }

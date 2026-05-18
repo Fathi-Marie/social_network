@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function(){
             else { r.text().then(function(t){ console.error(t); alert('Erreur lors de la sauvegarde'); }); }
         }).catch(function(err){ console.error(err); alert('Erreur réseau'); });
     });
-
+    
     const postVideo = document.getElementById('postVideo');
 	const postVideoLink = document.getElementById('postVideoUrl');
 	const postImage = document.getElementById('postImage');
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	postImage.onclick = function () {
                     postImageLink.click()
                 }
-
+                
     const publicCheckbox = document.getElementById('publicCheckbox');
 	const privateCheckbox = document.getElementById('privateCheckbox');
 	const friendsCheckbox = document.getElementById('friendsCheckbox');
@@ -169,6 +169,5 @@ document.addEventListener('DOMContentLoaded', function(){
 			})
 		}
 	}
-
 
 });

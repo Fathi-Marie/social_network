@@ -1,4 +1,5 @@
 package com.socialnetwork.socialnetwork.business.service;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,36 +13,39 @@ import com.socialnetwork.socialnetwork.entity.Follow;
 
 @Service
 public class FollowService implements IFollowService{
+
 	private IFollowRepository repository;
 	public FollowService(IFollowRepository followRepository) {
 		this.repository = followRepository;
 	}
-
+	
 	@Override
 	public ResponseEntity<Follow> getFollow(UUID userID, UUID userFollowedID) {
 		Optional<Follow> follow = this.repository.findByFollowerIdAndFollowingId(userID, userFollowedID);
-
+		
 		if(!follow.isPresent()) {
 			return new ResponseEntity<>(
 				      HttpStatus.NOT_FOUND);
 		}
-
+		
 		return new ResponseEntity<>(
-				follow.get(),
+				follow.get(), 
 			      HttpStatus.OK);
 	}
+
 	@Override
 	public ResponseEntity<Follow> create(Follow followUser) {
 		Follow saveFollow = this.repository.save(followUser);
-
+		
 		return new ResponseEntity<>(
-				saveFollow,
+				saveFollow, 
 			      HttpStatus.OK);
 	}
+
 	@Override
 	public ResponseEntity<Follow> delete(Follow follow) {
 		this.repository.delete(follow);
-
+		
 		return new ResponseEntity<>(
 			      HttpStatus.OK);
 	}

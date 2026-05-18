@@ -1,6 +1,5 @@
 package com.socialnetwork.socialnetwork.business.interfaces.repository;
 
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,8 +9,11 @@ import com.socialnetwork.socialnetwork.entity.PrivacySettings;
 import com.socialnetwork.socialnetwork.entity.User;
 
 
-public interface IPrivacySettingsRepository extends JpaRepository<PrivacySettings, UUID>{
-    Optional<PrivacySettings> findByUser(User user);
 
-    Optional<PrivacySettings> findByUser_Id(UUID userID);
+public interface IPrivacySettingsRepository extends JpaRepository<PrivacySettings, UUID>{
+
+	Optional<PrivacySettings> findByUser(User user);
+
+	Optional<PrivacySettings> findByUser_Id(UUID userID);
+
 }
