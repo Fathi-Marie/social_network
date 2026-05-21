@@ -9,3 +9,12 @@ function closeModal(){ if(editModal) editModal.style.display = 'none'; currentEd
 
  if(closeEventEditModal) closeEventEditModal.addEventListener('click', function(){ closeModal(); });
  if(addEventBtn) addEventBtn.addEventListener('click', function(){ openModal(); });
+
+ var editEvent = byId('edit-event');
+
+ if(editEvent) editEvent.addEventListener('click', function(e){ callEventPage(e); })
+
+ function callEventPage(el){
+	let eventId = el.currentTarget.getAttribute('data-id');
+	window.location.href = "/event/" + eventId;
+}
