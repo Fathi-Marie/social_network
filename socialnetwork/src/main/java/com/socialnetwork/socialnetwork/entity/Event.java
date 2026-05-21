@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.socialnetwork.socialnetwork.enums.VisibilityType;
 
@@ -37,6 +38,7 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
@@ -46,11 +48,9 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility_type")
     private VisibilityType visibilityType = VisibilityType.PUBLIC;
-    
+
     @Column(name = "capacity")
     private Integer capacity = 0;
-
-    
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
