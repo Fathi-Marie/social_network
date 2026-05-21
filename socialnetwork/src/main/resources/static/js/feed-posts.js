@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function(){
     document.addEventListener('click', function(e){
         var btn = e.target.closest && (e.target.closest('button[data-post-id]') || e.target.closest('button.btn-icon'));
         if(!btn) return;
+         // Skip if this is a comment toggle button or reaction button
+        if(btn.classList.contains('btn-toggle-comments') || btn.classList.contains('reaction-btn')) return;
         var postId = btn.getAttribute('data-post-id');
         if(!postId) return;
         // if this is a delete button
@@ -168,6 +170,22 @@ document.addEventListener('DOMContentLoaded', function(){
 				el.style.display = "none";
 			})
 		}
+	}
+
+    const annoucements = document.querySelectorAll(".announcement-part");
+	const eventAction = document.querySelectorAll(".eventAction");
+	
+	annoucements.forEach(el => {
+		el.addEventListener('click', GoToEvent, el)
+	})
+	
+	eventAction.forEach(el => {
+		el.addEventListener('click', GoToEvent, el)
+	})
+	
+	function GoToEvent(el){
+		let eventId = el.currentTarget.getAttribute('event-id');
+		window.location.href = "/event/" + eventId;
 	}
 
 });
