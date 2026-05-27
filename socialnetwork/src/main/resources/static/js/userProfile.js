@@ -75,97 +75,105 @@ deleteCompetence.forEach(competencies => {
 
 
 function DeleteCompetenceAsync(comp) {
-if (!confirm('Voulez-vous vraiment supprimer cette compétence ?')) return;
+    if (!confirm('Voulez-vous vraiment supprimer cette compétence ?')) return;
 
-	let competenceName = comp.currentTarget.getAttribute('data-value');
-	fetch('/user/competence/delete', {
-		method: 'DELETE',
-		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		body: 'competenceName=' + competenceName
-	}).then(function(r) {
-		if (r.ok) {  
-			window.location.href = "/profil"; 
-		}
-		else if (r.status === 403) { alert('Accès refusé'); }
-		else { r.text().then(function(t) { console.error(t); alert('Erreur lors de la sauvegarde'); }); }
-	}).catch(function(err) { console.error(err); alert('Erreur réseau'); });
+    let competenceName = comp.currentTarget.getAttribute('data-value');
+    fetch('/user/competence/delete', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'competenceName=' + competenceName
+    }).then(function (r) {
+        if (r.ok) {
+            window.location.href = "/profil";
+        } else if (r.status === 403) {
+            alert('Accès refusé');
+        } else {
+            r.text().then(function (t) {
+                console.error(t);
+                alert('Erreur lors de la sauvegarde');
+            });
+        }
+    }).catch(function (err) {
+        console.error(err);
+        alert('Erreur réseau');
+    });
 // Load user projects dynamically
-document.addEventListener('DOMContentLoaded', function() {
-    loadUserProjects();
-    
-    // Add click handler for add project card
-    const addProjectCard = document.getElementById('add-project-card');
-    if (addProjectCard) {
-        addProjectCard.addEventListener('click', function() {
-            window.location.href = '/projects';
-        });
-        addProjectCard.style.cursor = 'pointer';
-    }
-});
+    document.addEventListener('DOMContentLoaded', function () {
+        loadUserProjects();
 
-async function loadUserProjects() {
-    const userId = window.currentUserId;
-    if (!userId) return;
-    
-    const projectsContainer = document.getElementById('user-projects-profile');
-    if (!projectsContainer) return;
-    
-    try {
-        const response = await fetch(`/api/project/user/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
+        // Add click handler for add project card
+        const addProjectCard = document.getElementById('add-project-card');
+        if (addProjectCard) {
+            addProjectCard.addEventListener('click', function () {
+                window.location.href = '/projects';
+            });
+            addProjectCard.style.cursor = 'pointer';
+        }
+    });
+
+    async function loadUserProjects() {
+        const userId = window.currentUserId;
+        if (!userId) return;
+
+        const projectsContainer = document.getElementById('user-projects-profile');
+        if (!projectsContainer) return;
+
+        try {
+            const response = await fetch(`/api/project/user/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                console.error('Failed to load projects');
+                return;
             }
-        });
-        
-        if (!response.ok) {
-            console.error('Failed to load projects');
+
+            const projects = await response.json();
+            displayProjectsOnProfile(projects);
+        } catch (error) {
+            console.error('Error loading projects:', error);
+        }
+    }
+
+    function displayProjectsOnProfile(projects) {
+        const projectsContainer = document.getElementById('user-projects-profile');
+        const addProjectCard = document.getElementById('add-project-card');
+
+        // Clear existing projects but keep the add card
+        const existingProjects = projectsContainer.querySelectorAll('.project-item');
+        existingProjects.forEach(project => project.remove());
+
+        if (!projects || projects.length === 0) {
+            // Keep only the add project card
             return;
         }
-        
-        const projects = await response.json();
-        displayProjectsOnProfile(projects);
-    } catch (error) {
-        console.error('Error loading projects:', error);
-    }
-}
 
-function displayProjectsOnProfile(projects) {
-    const projectsContainer = document.getElementById('user-projects-profile');
-    const addProjectCard = document.getElementById('add-project-card');
-    
-    // Clear existing projects but keep the add card
-    const existingProjects = projectsContainer.querySelectorAll('.project-item');
-    existingProjects.forEach(project => project.remove());
-    
-    if (!projects || projects.length === 0) {
-        // Keep only the add project card
-        return;
-    }
-    
-    // Show only first 3 projects
-    const projectsToShow = projects.slice(0, 3);
-    
-    projectsToShow.forEach(project => {
-        const projectCard = createProjectCardForProfile(project);
-        projectsContainer.insertBefore(projectCard, addProjectCard);
-    });
-    
-    // Re-initialize lucide icons
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-}
+        // Show only first 3 projects
+        const projectsToShow = projects.slice(0, 3);
 
-function createProjectCardForProfile(project) {
-    const card = document.createElement('div');
-    card.className = 'card project-item';
-    
-    const visibilityBadge = getVisibilityBadge(project.visibilityType);
-    const description = project.description || 'Aucune description';
-    const truncatedDesc = description.length > 80 ? description.substring(0, 80) + '...' : description;
-    
-    card.innerHTML = `
+        projectsToShow.forEach(project => {
+            const projectCard = createProjectCardForProfile(project);
+            projectsContainer.insertBefore(projectCard, addProjectCard);
+        });
+
+        // Re-initialize lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    function createProjectCardForProfile(project) {
+        const card = document.createElement('div');
+        card.className = 'card project-item';
+
+        const visibilityBadge = getVisibilityBadge(project.visibilityType);
+        const description = project.description || 'Aucune description';
+        const truncatedDesc = description.length > 80 ? description.substring(0, 80) + '...' : description;
+
+        card.innerHTML = `
         <div class="project-info">
             <h4>
                 ${escapeHtml(project.name)} 
@@ -175,26 +183,31 @@ function createProjectCardForProfile(project) {
             <a href="/projects" class="details-link">Gérer <i data-lucide="arrow-right"></i></a>
         </div>
     `;
-    
-    return card;
-}
 
-function getVisibilityBadge(visibility) {
-    switch(visibility) {
-        case 'PUBLIC': return 'Public';
-        case 'FRIENDS': return 'Amis';
-        case 'PRIVATE': return 'Privé';
-        default: return visibility;
+        return card;
     }
-}
 
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    function getVisibilityBadge(visibility) {
+        switch (visibility) {
+            case 'PUBLIC':
+                return 'Public';
+            case 'FRIENDS':
+                return 'Amis';
+            case 'PRIVATE':
+                return 'Privé';
+            default:
+                return visibility;
+        }
+    }
+
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
 }
