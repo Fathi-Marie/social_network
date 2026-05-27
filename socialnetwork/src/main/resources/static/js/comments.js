@@ -59,7 +59,7 @@
         html += '<div class="comment-content">' + escapeHtml(comment.content) + '</div>';
         html += '<div class="comment-actions">';
         html += '<button class="btn-reply" data-comment-id="' + comment.id + '">Repondre</button>';
-         if(isOwner){
+        if(isOwner){
             html += '<button class="btn-edit-comment" data-comment-id="' + comment.id + '">Modifier</button>';
             html += '<button class="btn-delete-comment" data-comment-id="' + comment.id + '">Supprimer</button>';
         }
@@ -121,7 +121,7 @@
         form.className = 'reply-form';
         form.setAttribute('data-parent-id', parentCommentId);
         form.innerHTML = '<textarea class="comment-input" placeholder="Votre reponse..." rows="1"></textarea>' +
-         '<button type="button" class="btn-send-reply"><i data-lucide="send"></i></button>' +
+            '<button type="button" class="btn-send-reply"><i data-lucide="send"></i></button>' +
             '<button type="button" class="btn-cancel-reply">Annuler</button>';
         commentItem.parentNode.insertBefore(form, commentItem.nextSibling);
         if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -130,11 +130,11 @@
             var input = form.querySelector('.comment-input');
             var content = input.value.trim();
             if(!content){ alert('Le commentaire ne peut pas etre vide'); return; }
-             var postId = container.getAttribute('data-post-id');
+            var postId = container.getAttribute('data-post-id');
             postComment(postId, content, parentCommentId)
                 .then(function(){ form.remove(); refreshComments(container, getCurrentUserId()); })
                 .catch(function(err){ console.error('reply error', err); alert('Erreur lors de la reponse: ' + err.message); });
-                 });
+        });
         form.querySelector('.btn-cancel-reply').addEventListener('click', function(e){ e.preventDefault(); form.remove(); });
     }
 
@@ -152,7 +152,7 @@
             e.preventDefault();
             var newContent = contentDiv.querySelector('.comment-input').value.trim();
             if(!newContent){ alert('Le commentaire ne peut pas etre vide'); return; }
-              updateComment(commentId, newContent)
+            updateComment(commentId, newContent)
                 .then(function(){ refreshComments(container, getCurrentUserId()); })
                 .catch(function(err){ console.error('update error', err); alert('Erreur lors de la modification: ' + err.message); });
         });
@@ -231,6 +231,6 @@
 
             // Initial fetch to populate counts and cache comments (even if hidden)
             refreshComments(section, currentUserId);
-            });
+        });
     });
 })();

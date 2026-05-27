@@ -27,7 +27,6 @@ public class EventAttendeeService implements IEventAttendeeService{
 	public ResponseEntity<EventAttendee> getEventAttendeeByEventIDAndUserID(UUID eventID, UUID userID) {
 		Optional<EventAttendee> eventAttendee = this.repository.findByEvent_idAndUser_id(eventID,userID);
 		System.out.println(eventID);
-		
 		if(!eventAttendee.isPresent()) {
 			return new ResponseEntity<>(
 				      HttpStatus.NOT_FOUND);
@@ -58,12 +57,12 @@ public class EventAttendeeService implements IEventAttendeeService{
 		return new ResponseEntity<List<EventAttendee>>(listEventAttendee, HttpStatus.OK);
 	}
 
-    @Override
+	@Override
 	public void deleteEventAttendeeByEventIdAndUserId(EventAttendee eventAttendee) {
 		this.repository.deleteById(eventAttendee.getId());
 	}
-	
-    @Override
+
+	@Override
 	public ResponseEntity<EventAttendee> Update(EventAttendee eventAttendee) {
 		EventAttendee saveEventAttendee = this.repository.save(eventAttendee);
 		return new ResponseEntity<EventAttendee>(saveEventAttendee, HttpStatus.OK);
@@ -74,5 +73,4 @@ public class EventAttendeeService implements IEventAttendeeService{
 		List<EventAttendee> listEventAttendee = this.repository.findByEvent_idAndStatus(eventID, EventAttendanceStatus.ACCEPTED);
 		return new ResponseEntity<List<EventAttendee>>(listEventAttendee, HttpStatus.OK);
 	}
-
 }

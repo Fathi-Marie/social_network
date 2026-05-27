@@ -102,8 +102,8 @@ public class EventAttendeeController {
 		UUID requesterId = UUID.fromString(userIsConnect.toString());
 		return this.eventAttendeeservice.getSentRequestsFor(requesterId);
 	}
-
-    @DeleteMapping("{id}")
+	
+	@DeleteMapping("{id}")
 	public ResponseEntity<String> deleteEventAttendee(HttpServletRequest request, @PathVariable("id") UUID id) {
 		Object userIsConnect = Utils.validPage(request, true);
 		if (userIsConnect == null) {
@@ -113,15 +113,15 @@ public class EventAttendeeController {
 		ResponseEntity<EventAttendee> eventAttendeeExist = this.eventAttendeeservice.getEventAttendeeByEventIDAndUserID(
 				id, UUID.fromString(userIsConnect.toString()));
 
-        if (eventAttendeeExist.getStatusCode() == HttpStatusCode.valueOf(404)) {
+		if (eventAttendeeExist.getStatusCode() == HttpStatusCode.valueOf(404)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User not exist in this event");
 		}
 		
 		this.eventAttendeeservice.deleteEventAttendeeByEventIdAndUserId(eventAttendeeExist.getBody());
 		return ResponseEntity.ok().build();
 	}
-
-    @PutMapping("/accept")
+	
+	@PutMapping("/accept")
 	public ResponseEntity<String> acceptEventRequest(HttpServletRequest request,
 			@RequestParam("requesterId") String requesterId ,
 			@RequestParam("eventId") String eventId) {
@@ -185,6 +185,6 @@ public class EventAttendeeController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to accept event request");
 	}
 	
-                
-
 }
+
+

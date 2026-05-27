@@ -52,7 +52,7 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility_type")
     private VisibilityType visibilityType = VisibilityType.PUBLIC;
-
+    
     @Column(name = "capacity")
     private Integer capacity = 0;
 
@@ -63,7 +63,7 @@ public class Event {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
+    
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EventAttendee> eventAttendee;
 
@@ -149,11 +149,13 @@ public class Event {
         this.updatedAt = updatedAt;
     }
 
-    public List<EventAttendee> getEventAttendee() {
+	public List<EventAttendee> getEventAttendee() {
 		return eventAttendee;
 	}
 
 	public void setEventAttendee(List<EventAttendee> eventAttendee) {
 		this.eventAttendee = eventAttendee;
 	}
+    
+    
 }
