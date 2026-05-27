@@ -318,6 +318,29 @@
     padding: 15px;
 }
 
+.btn-join-project {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--primary), rgba(29, 155, 240, 0.8));
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(29, 155, 240, 0.25);
+}
+
+.btn-join-project:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(29, 155, 240, 0.35);
+}
+
+.btn-join-project:active {
+    transform: translateY(0);
+}
+
 .type-tag {
     font-size: 0.7rem;
     background: rgba(255, 255, 255, 0.1);
@@ -462,7 +485,7 @@
     }
 }
 
-#editEventModal, #userRecommandationModal {
+#editEventModal, #userRecommandationModal, #editHobbyModal, #editCompetenciesModal {
     display: none;
     position: fixed;
     inset: 0;
@@ -474,7 +497,7 @@
     padding: 20px;
 }
 
-#editEventModal .card, #userRecommandationModal .card {
+#editEventModal .card, #userRecommandationModal .card, #editHobbyModal .card, #editCompetenciesModal .card {
     width: 100%;
     max-width: 550px;
     background: #1c2028;
@@ -498,7 +521,7 @@
     color: var(--text-main);
 }
 
-#closeEventEditModal, #closeUserRecommandationModal {
+#closeEventEditModal, #closeUserRecommandationModal, #closeHobbyEditModal, #closeCompetenciesEditModal {
     background: transparent;
     border: none;
     color: var(--text-dim);
@@ -507,7 +530,7 @@
     line-height: 1;
 }
 
-#closeEventEditModal:hover, #closeUserRecommandationModal:hover{
+#closeEventEditModal:hover, #closeUserRecommandationModal:hover, #closeHobbyEditModal:hover, #closeCompetenciesEditModal:hover{
     color: white;
 }
 
@@ -594,7 +617,7 @@ input:focus, select:focus, textarea:focus {
     font-size: 0.9rem;
 }
 
-.btn-event-submit, .btn-submit {
+.btn-event-submit, .btn-submit, .btn-competence-submit {
     width: 100%;
     background: var(--primary);
     color: white;
@@ -638,4 +661,8 @@ textarea {
     font-weight: 500;
     background-color: #2196f3;
     color: white;
+}
+
+.btn-change-password{
+	margin : 20px;
 }
