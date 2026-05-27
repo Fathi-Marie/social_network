@@ -9,14 +9,18 @@
 <link rel="stylesheet" th:href="@{/css/feed.css}">
 <script src="https://unpkg.com/lucide@latest"></script>
 <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
-<meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}" />
-<meta th:if="${session.userId != null}" name="userId" th:content="${session.userId}" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/fr.min.js"></script>
+<meta th:if="${_csrf != null}" name="_csrf_header"
+	th:content="${_csrf.headerName}" />
+<meta th:if="${session.userId != null}" name="userId"
+	th:content="${session.userId}" />
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/fr.min.js"></script>
 </head>
 <body class="bg-dark">
 
-<div th:replace="~{fragments/header :: header-fragment}"></div>
+	<div th:replace="~{fragments/header :: header-fragment}"></div>
 
 	<div class="container blog-layout">
 
@@ -264,7 +268,7 @@
                 el.innerText = moment().diff(dateMoment, 'hours') < 24 ? dateMoment.fromNow() : dateMoment.format('D MMMM YYYY');
             }
         });
-
+        
         document.querySelectorAll('.event-date-period').forEach(function(el) {
             const rawDate = el.getAttribute('data-timestamp');
             if (rawDate) {

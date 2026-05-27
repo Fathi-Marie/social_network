@@ -18,11 +18,10 @@ public interface IEventAttendeeService {
 
 	ResponseEntity<List<EventAttendee>> getSentRequestsFor(UUID requesterId);
 
-    void deleteEventAttendeeByEventIdAndUserId(EventAttendee eventAttedee);
+	void deleteEventAttendeeByEventIdAndUserId(EventAttendee eventAttedee);
 
-    public ResponseEntity<EventAttendee> Update(EventAttendee eventAttendee);
+	public ResponseEntity<EventAttendee> Update(EventAttendee eventAttendee);
 
 	ResponseEntity<List<EventAttendee>> getEventAttendeeByEventID(UUID eventID);
-
 
 }

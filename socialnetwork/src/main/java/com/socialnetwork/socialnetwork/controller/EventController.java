@@ -35,18 +35,18 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/event")
 public class EventController {
-    private IEventService eventService;
+	private IEventService eventService;
 	private IUserService userService;
 
-    @Autowired
-    private UserController UserController;
+	@Autowired
+	private UserController UserController;
 
-    public EventController(IEventService eventService, IUserService userService) {
-        this.eventService = eventService;
-        this.userService = userService;
-    }
+	public EventController(IEventService eventService, IUserService userService) {
+		this.eventService = eventService;
+		this.userService = userService;
+	}
 
-@PostMapping("")
+	@PostMapping("")
 	public String createEvent(HttpServletRequest request, Model model, Event event) {
 		Object userIsConnect = Utils.validPage(request, true);
 		model.addAttribute("isConnect", userIsConnect);
@@ -61,16 +61,15 @@ public class EventController {
 			return this.UserController.showUserProfil(request, model);
 		}
 
-
-        if (event.getCapacity() <= 0) {
+		if (event.getCapacity() <= 0) {
 			model.addAttribute("errorEvent", "Un événement doit avoir obligatoirement plus de 0 participants");
 			model.addAttribute("event", event);
 			return this.UserController.showUserProfil(request, model);
 		}
 
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
+		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
 
-    if (event.getEventDate().isBefore(now.toLocalDateTime())
+		if (event.getEventDate().isBefore(now.toLocalDateTime())
 				|| event.getEventDate().isEqual(now.toLocalDateTime())) {
 			model.addAttribute("errorEvent",
 					"La date doit être supérieur a celle d'aujourd'hui pour la création de l'événement");
@@ -78,7 +77,7 @@ public class EventController {
 			return this.UserController.showUserProfil(request, model);
 		}
 
-	    ResponseEntity<User> user = this.userService.getUserById(UUID.fromString(userIsConnect.toString()));
+		ResponseEntity<User> user = this.userService.getUserById(UUID.fromString(userIsConnect.toString()));
 
 		event.setCreator(user.getBody());
 
@@ -88,9 +87,9 @@ public class EventController {
 		model.addAttribute("event", saveEvent);
 
 		return this.UserController.showUserProfil(request, model);
-    }
-	
-    @GetMapping("{id}")
+	}
+
+	@GetMapping("{id}")
 	public String getEvent(HttpServletRequest request, Model model, @PathVariable("id") String id) {
 		Object userIsConnect = Utils.validPage(request, true);
 		model.addAttribute("isConnect", userIsConnect);
