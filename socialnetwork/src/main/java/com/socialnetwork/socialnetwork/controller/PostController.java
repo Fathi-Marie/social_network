@@ -7,10 +7,12 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,14 +43,17 @@ public class PostController {
     private final IUserService userService;
     private final IMediaService mediaService;
 
+    @Autowired
+    private UserController userController;
+
     public PostController(IPostRepository postRepository, IUserService userService, IMediaService mediaService) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.mediaService = mediaService;
     }
-    
+
     @PostMapping("/post")
-	public String handleCreatePost(HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
+	public String handleCreatePost(Model model, HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) {
 			return "login";
@@ -56,11 +61,11 @@ public class PostController {
 		try {
 			UUID userId = UUID.fromString(session.getAttribute("userId").toString());
 			ResponseEntity<User> author = userService.getUserById(userId);
-			
+
 			if(author.getStatusCode() != HttpStatusCode.valueOf(200)) {
 				throw new IllegalArgumentException("User not found");
 			}
-			
+
 			Post post = new Post();
 			post.setAuthor(author.getBody());
 			post.setContent(content);
@@ -79,13 +84,13 @@ public class PostController {
 			}
 			post.setAllowComments(allowComments);
 			Post savePost =  postRepository.save(post);
-			
+
 			if(postVideoUrl != null && !postVideoUrl.isEmpty()) {
 				System.out.println("post Video : " + postVideoUrl);
 				String uploadVideoUrl = FileUpload.UploadFile(postVideoUrl);
 				long videoSize = postVideoUrl.getSize();
 				String extensionVideo = postVideoUrl.getContentType();
-				
+
 				Media videoMedia = new Media();
 				videoMedia.setFileSize(videoSize);
 				videoMedia.setFileUrl(uploadVideoUrl);
@@ -93,16 +98,16 @@ public class PostController {
 				videoMedia.setMimeType(extensionVideo);
 				videoMedia.setPost(savePost);
 				videoMedia.setUser(author.getBody());
-				
+
 				this.mediaService.create(videoMedia);
 			}
-			
+
 			if(postImageUrl != null && !postImageUrl.isEmpty()) {
 				System.out.println("postImage picture : " + postImageUrl);
 				String uploadImageUrl = FileUpload.UploadFile(postImageUrl);
 				long imageSize = postImageUrl.getSize();
 				String extensionImage = postImageUrl.getContentType();
-				
+
 				Media imageMedia = new Media();
 				imageMedia.setFileSize(imageSize);
 				imageMedia.setFileUrl(uploadImageUrl);
@@ -110,16 +115,16 @@ public class PostController {
 				imageMedia.setMimeType(extensionImage);
 				imageMedia.setPost(savePost);
 				imageMedia.setUser(author.getBody());
-				
+
 				this.mediaService.create(imageMedia);
 			}
-			
-			
-			
+
+
+
 		} catch (Exception e) {
 			return "accueil";
 		}
-		return "accueil";
+		return this.userController.showFeed(model, request);
 	}
 
     @GetMapping("/post/{id}")
