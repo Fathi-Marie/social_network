@@ -46,13 +46,15 @@ public class CommentService implements ICommentService {
         comment.setPost(post);
         comment.setAuthor(author);
         comment.setContent(content);
-         if (parentCommentId != null) {
+
+        if (parentCommentId != null) {
             Optional<Comment> parentOpt = commentRepository.findById(parentCommentId);
             if (parentOpt.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             comment.setParentComment(parentOpt.get());
         }
+
         Comment saved = commentRepository.save(comment);
         return new ResponseEntity<>(toDto(saved), HttpStatus.CREATED);
     }
@@ -88,7 +90,7 @@ public class CommentService implements ICommentService {
 
         commentRepository.delete(comment);
         return new ResponseEntity<>(HttpStatus.OK);
-         }
+    }
 
     @Override
     public ResponseEntity<List<CommentDto>> getCommentsByPost(UUID postId) {
@@ -106,7 +108,7 @@ public class CommentService implements ICommentService {
         CommentDto dto = toDto(comment);
         List<Comment> replies = commentRepository.findByParentComment_IdOrderByCreatedAtAsc(comment.getId());
         dto.setReplies(replies.stream().map(this::toDtoWithReplies).collect(Collectors.toList()));
-          return dto;
+        return dto;
     }
 
     private CommentDto toDto(Comment comment) {

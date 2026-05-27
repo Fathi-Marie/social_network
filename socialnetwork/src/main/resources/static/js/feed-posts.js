@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.addEventListener('click', function(e){
         var btn = e.target.closest && (e.target.closest('button[data-post-id]') || e.target.closest('button.btn-icon'));
         if(!btn) return;
-         // Skip if this is a comment toggle button or reaction button
+        // Skip if this is a comment toggle button or reaction button
         if(btn.classList.contains('btn-toggle-comments') || btn.classList.contains('reaction-btn')) return;
         var postId = btn.getAttribute('data-post-id');
         if(!postId) return;
@@ -171,8 +171,8 @@ document.addEventListener('DOMContentLoaded', function(){
 			})
 		}
 	}
-
-    const annoucements = document.querySelectorAll(".announcement-part");
+	
+	const annoucements = document.querySelectorAll(".announcement-part");
 	const eventAction = document.querySelectorAll(".eventAction");
 	
 	annoucements.forEach(el => {

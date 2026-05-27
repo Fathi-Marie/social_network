@@ -29,9 +29,9 @@ public EventService(IEventRepository repository) {
 @Override
 public ResponseEntity<Event> save(Event event) {
 	Event saveEvent = this.repository.save(event);
-
+	
 	return new ResponseEntity<>(
-			  saveEvent,
+			  saveEvent, 
 		      HttpStatus.OK);
 }
 
@@ -39,45 +39,45 @@ public ResponseEntity<Event> save(Event event) {
 public ResponseEntity<Event> getFirstEventByDate(UUID id){
 	ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Europe/Paris"));
 	Optional<List<Event>> event = this.repository.getEventByDate(now.toLocalDateTime());
-
+	
 	if(event.get().size() == 0) {
 		return new ResponseEntity<>(
 			      HttpStatus.NOT_FOUND);
 	}
-
+	
 	Optional<Event> eventElm =  event.get().stream().filter(x -> x.getCreator().getId().equals(id)).findFirst();
-
+	
 	if(!eventElm.isPresent()) {
 		return new ResponseEntity<>(
 			      HttpStatus.NOT_FOUND);
 	}
-
+	
 	return new ResponseEntity<>(
-			  eventElm.get(),
+			  eventElm.get(), 
 		      HttpStatus.OK);
-
+	
 }
 
 @Override
 public ResponseEntity<Event> getEventByID(UUID id) {
 	Optional<Event> event = this.repository.findById(id);
-
+	
 	if(!event.isPresent()) {
 		return new ResponseEntity<>(
 			      HttpStatus.NOT_FOUND);
 	}
-
+	
 	return new ResponseEntity<>(
-			  event.get(),
+			  event.get(), 
 		      HttpStatus.OK);
 }
 
 @Override
 public ResponseEntity<Event> update(Event event) {
 	Event saveEvent = this.repository.save(event);
-
+	
 	return new ResponseEntity<>(
-			saveEvent,
+			saveEvent, 
 		      HttpStatus.OK);
 }
 
