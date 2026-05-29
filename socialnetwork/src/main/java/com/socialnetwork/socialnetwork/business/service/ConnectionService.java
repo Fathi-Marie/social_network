@@ -133,4 +133,5 @@ public class ConnectionService implements IConnectionService {
     public List<Connection> findAllAcceptedRequestByUserID(UUID requesterId) {
         List<Connection> acceptedRequest = repository.findAllAcceptedRequestByUserID(requesterId);
         return acceptedRequest;
+    }
 }
