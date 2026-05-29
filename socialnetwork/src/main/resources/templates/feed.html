@@ -7,7 +7,6 @@
 	<link rel="stylesheet" th:href="@{/css/charteGraphique.css}">
 	<link rel="stylesheet" th:href="@{/css/header.css}">
 	<link rel="stylesheet" th:href="@{/css/feed.css}">
-	<link rel="stylesheet" th:href="@{/css/project.css}">
 	<script src="https://unpkg.com/lucide@latest"></script>
 	<meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
 	<meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}" />
@@ -43,8 +42,6 @@
 		<nav class="side-nav card">
 			<a href="#" class="nav-item active" id="showPosts"><i data-lucide="home"></i> Fil d'actualité</a>
 			<a href="#" class="nav-item" id="showEvents"><i data-lucide="megaphone"></i> Annonces</a>
-			<a href="#" class="nav-item" id="showProjects"><i data-lucide="message-square"></i> Projets</a>
-			<a href="#" class="nav-item"><i data-lucide="calendar"></i> Calendrier</a>
 			<hr>
 			<a href="/privacy" class="nav-item"><i data-lucide="settings"></i> Paramètres</a>
 		</nav>
@@ -63,6 +60,15 @@
 					<div class="media-inputs">
 						<button id="postImage" type="button" class="btn-icon-upload" title="Image"><i data-lucide="image"></i></button>
 						<button id="postVideo" type="button" class="btn-icon-upload" onclick="document.getElementById('postVideoUrl').click()" title="Vidéo"><i data-lucide="video"></i></button>
+						<button id="postFile" type="button" class="btn-icon-upload"
+								onclick="document.getElementById('postFileUrl').click()"
+								title="Fichier">
+								<i data-lucide="file"></i>
+							</button>
+						<input
+								type="file" id="postFileUrl" name="postFileUrl"
+								accept=".pdf,.html,.htm,.doc,.docx,.xls,.xlsx" style="display: none;">
+						
 						<input type="file" id="postImageUrl" name="postImageUrl" accept="image/*" style="display: none;">
 						<input type="file" id="postVideoUrl" name="postVideoUrl" accept=".mp4, .avi" style="display: none;">
 						<div class="vertical-divider"></div>
@@ -79,9 +85,25 @@
 				</div>
 			</form>
 		</div>
+		
+			<div class="publish-options">
+				<select id="preferences" name="preferences" class="custom-select">
+					<option value="Date">Date</option>
+					<option value="Popularité">Popularité</option>
+					<option value="Commentaires">Commentaires</option>
+				</select>
+
+			</div>
+
+			<div class="search-bar-wrapper">
+				<div class="search-input-group">
+					<i data-lucide="search"></i> <input id="post-search" type="text"
+						name="query" placeholder="Rechercher post">
+				</div>
+			</div>
 
 		<div class="posts-list" id="postsContainer">
-			<article th:each="post : ${posts}" class="post-card card" th:attr="data-post-card-id=${post.id}, data-post-visibility=${post.visibilityType}">
+			<article th:each="post : ${posts}" class="post-card card" th:attr="data-post-card-id=${post.id}, data-post-visibility=${post.visibilityType}, data-post-createdAt=${post.createdAt}, data-auhtor-lastname=${post.author.lastName}, data-author-firstName=${post.author.firstName}, data-post-content=${post.content}"> 
 				<div class="post-header">
 					<img th:src="@{${post.author.profilePictureUrl}}" class="avatar-small">
 					<div class="post-meta">
@@ -101,6 +123,10 @@
 						<div th:each="pm : ${post.medias}" class="media-item">
 							<img th:if="${pm.mediaType.toString().equals('IMAGE')}" th:src="@{${pm.fileUrl}}" class="img-fluid rounded">
 							<video th:if="${pm.mediaType.toString().equals('VIDEO')}" controls class="video-fluid rounded"><source th:src="@{${pm.fileUrl}}" type="video/mp4"></video>
+							<a th:if="${pm.mediaType.toString().equals('DOCUMENT')}"
+									th:href="@{${pm.fileUrl}}" >Télécharger</a>
+									
+								
 						</div>
 					</div>
 				</div>
@@ -134,9 +160,6 @@
 
 		<div id="eventsContainer" style="display: none;">
 			<div th:replace="~{events :: events-fragment}"></div>
-		</div>
-		<div id="projectsContainer" style="display: none;">
-			<div th:replace="~{projects :: projects-fragment}"></div>
 		</div>
 
 	</main>
@@ -284,10 +307,6 @@
 			btn: document.getElementById('showEvents'),
 			cont: document.getElementById('eventsContainer')
 		},
-			projects: {
-			btn: document.getElementById('showProjects'),
-			cont: document.getElementById('projectsContainer')
-		}
 		};
 
 			const sideList = document.getElementById('announcementsSideList');
@@ -295,37 +314,33 @@
 			const pubArea = document.getElementById('publishArea');
 
 			// 3. Fonction de basculement
-			function switchTab(mode) {
-			console.log("Basculement vers : " + mode);
+				// 3. Fonction de basculement
+				function switchTab(mode) {
+					console.log("Basculement vers : " + mode);
 
-			Object.keys(tabs).forEach(key => {
-			const tab = tabs[key];
-			if (tab.cont) {
-			tab.cont.style.display = (key === mode) ? 'block' : 'none';
-		}
-			if (tab.btn) {
-			if (key === mode) tab.btn.classList.add('active');
-			else tab.btn.classList.remove('active');
-		}
-		});
+					Object.keys(tabs).forEach(key => {
+						const tab = tabs[key];
+						if (tab.cont) {
+							tab.cont.style.display = (key === mode) ? 'block' : 'none';
+						}
+						if (tab.btn) {
+							if (key === mode) tab.btn.classList.add('active');
+							else tab.btn.classList.remove('active');
+						}
+					});
 
-			// Éléments spécifiques
-			if (pubArea) pubArea.style.display = (mode === 'posts') ? 'block' : 'none';
-			if (sideList) sideList.style.display = (mode === 'posts') ? 'block' : 'none';
-			if (sideForm) sideForm.style.display = (mode === 'events') ? 'block' : 'none';
+					// Éléments spécifiques à droite (Sidebar)
+					if (pubArea) pubArea.style.display = (mode === 'posts') ? 'block' : 'none';
+					if (sideList) sideList.style.display = (mode === 'posts') ? 'block' : 'none';
+					if (sideForm) sideForm.style.display = (mode === 'events') ? 'block' : 'none';
 
-			// Charger les projets si la fonction existe dans projects.js
-			if (mode === 'projects' && typeof loadProjects === 'function') {
-			loadProjects();
-		}
 
-			lucide.createIcons();
-		}
+					lucide.createIcons();
+				}
 
 			// 4. Assignation des événements
 			if (tabs.posts.btn) tabs.posts.btn.onclick = (e) => { e.preventDefault(); switchTab('posts'); };
 			if (tabs.events.btn) tabs.events.btn.onclick = (e) => { e.preventDefault(); switchTab('events'); };
-			if (tabs.projects.btn) tabs.projects.btn.onclick = (e) => { e.preventDefault(); switchTab('projects'); };
 
 			// Affichage par défaut
 			switchTab('posts');
