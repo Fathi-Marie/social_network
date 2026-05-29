@@ -42,7 +42,7 @@ public class PostController {
     private final IPostRepository postRepository;
     private final IUserService userService;
     private final IMediaService mediaService;
-
+    
     @Autowired
     private UserController userController;
 
@@ -51,21 +51,22 @@ public class PostController {
         this.userService = userService;
         this.mediaService = mediaService;
     }
-
+    
     @PostMapping("/post")
-	public String handleCreatePost(Model model, HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
-		HttpSession session = request.getSession(false);
+	public String handleCreatePost(Model model, HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam("postFileUrl") MultipartFile postFileUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
+		System.out.println("post" + postFileUrl);
+    	HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) {
 			return "login";
 		}
 		try {
 			UUID userId = UUID.fromString(session.getAttribute("userId").toString());
 			ResponseEntity<User> author = userService.getUserById(userId);
-
+			
 			if(author.getStatusCode() != HttpStatusCode.valueOf(200)) {
 				throw new IllegalArgumentException("User not found");
 			}
-
+			
 			Post post = new Post();
 			post.setAuthor(author.getBody());
 			post.setContent(content);
@@ -84,13 +85,13 @@ public class PostController {
 			}
 			post.setAllowComments(allowComments);
 			Post savePost =  postRepository.save(post);
-
+			
 			if(postVideoUrl != null && !postVideoUrl.isEmpty()) {
 				System.out.println("post Video : " + postVideoUrl);
 				String uploadVideoUrl = FileUpload.UploadFile(postVideoUrl);
 				long videoSize = postVideoUrl.getSize();
 				String extensionVideo = postVideoUrl.getContentType();
-
+				
 				Media videoMedia = new Media();
 				videoMedia.setFileSize(videoSize);
 				videoMedia.setFileUrl(uploadVideoUrl);
@@ -98,16 +99,16 @@ public class PostController {
 				videoMedia.setMimeType(extensionVideo);
 				videoMedia.setPost(savePost);
 				videoMedia.setUser(author.getBody());
-
+				
 				this.mediaService.create(videoMedia);
 			}
-
+			
 			if(postImageUrl != null && !postImageUrl.isEmpty()) {
 				System.out.println("postImage picture : " + postImageUrl);
 				String uploadImageUrl = FileUpload.UploadFile(postImageUrl);
 				long imageSize = postImageUrl.getSize();
 				String extensionImage = postImageUrl.getContentType();
-
+				
 				Media imageMedia = new Media();
 				imageMedia.setFileSize(imageSize);
 				imageMedia.setFileUrl(uploadImageUrl);
@@ -115,12 +116,29 @@ public class PostController {
 				imageMedia.setMimeType(extensionImage);
 				imageMedia.setPost(savePost);
 				imageMedia.setUser(author.getBody());
-
+				
 				this.mediaService.create(imageMedia);
 			}
-
-
-
+			
+			if(postFileUrl != null && !postFileUrl.isEmpty()) {
+				System.out.println("postFile  : " + postFileUrl);
+				String uploadFileUrl = FileUpload.UploadFile(postFileUrl);
+				long fileSize = postFileUrl.getSize();
+				String extensionFile = postFileUrl.getContentType();
+				
+				Media fileMedia = new Media();
+				fileMedia.setFileSize(fileSize);
+				fileMedia.setFileUrl(uploadFileUrl);
+				fileMedia.setMediaType(MediaType.DOCUMENT);
+				fileMedia.setMimeType(extensionFile);
+				fileMedia.setPost(savePost);
+				fileMedia.setUser(author.getBody());
+				
+				this.mediaService.create(fileMedia);
+			}
+			
+			
+			
 		} catch (Exception e) {
 			return "accueil";
 		}

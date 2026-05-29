@@ -11,16 +11,16 @@ if (friendRequestButtons.length > 0) {
 }
 
 function showAlert(message, type = 'info') {
-	// Create a simple alert - you can replace this with a toast notification
-	const alertDiv = document.createElement('div');
-	alertDiv.className = `alert alert-${type} active`;
-	alertDiv.textContent = message;
-
-	document.body.insertBefore(alertDiv, document.body.firstChild);
-
-	setTimeout(() => {
-		alertDiv.remove();
-	}, 3000);
+    // Create a simple alert - you can replace this with a toast notification
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} active`;
+    alertDiv.textContent = message;
+    
+    document.body.insertBefore(alertDiv, document.body.firstChild);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
 }
 
 function handleFriendRequest(event) {
@@ -157,16 +157,16 @@ function loadSentRequests() {
 }
 
 function showAlert(message, type = 'info') {
-	// Create a simple alert - you can replace this with a toast notification
-	const alertDiv = document.createElement('div');
-	alertDiv.className = `alert alert-${type} active`;
-	alertDiv.textContent = message;
-
-	document.body.insertBefore(alertDiv, document.body.firstChild);
-
-	setTimeout(() => {
-		alertDiv.remove();
-	}, 3000);
+    // Create a simple alert - you can replace this with a toast notification
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} active`;
+    alertDiv.textContent = message;
+    
+    document.body.insertBefore(alertDiv, document.body.firstChild);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
 }
 
 function markSentButtons(requests) {
@@ -440,15 +440,15 @@ function displaySuggestionRequests(requests) {
 	const container = document.getElementById('suggestions-container');
 	if (!container) return;
 
-	if (requests.length) {
+	if (Object.keys(requests).length == 0) {
 		container.innerHTML = '<p>Pas de suggestions.</p>';
 		return;
 	}
 
 	let html = '<div class="pending-requests-list sent-list">';
 	html += '<h3>Suggestions amis</h3>';
-
-
+	
+	
 	Object.entries(requests).forEach(([key, value]) => {
 		var tabKey = key.split(" ");
 		var id = tabKey[0];
@@ -466,14 +466,14 @@ function displaySuggestionRequests(requests) {
                 </div>
             </div>
         `;
-
-
-	});
-
+        
+        
+    });
+	
 	html += '</div>';
 
 	container.innerHTML = html;
-
+	
 	// Attach event listeners to accept/decline buttons
 	document.querySelectorAll('.btn-friend-request').forEach(btn => {
 		btn.addEventListener('click', function() {
@@ -484,12 +484,12 @@ function displaySuggestionRequests(requests) {
 
 	document.querySelectorAll('.view-profile').forEach(btn => {
 		btn.addEventListener('click', function() {
-			console.log(btn)
+		console.log(btn)
 			const requesterId = this.getAttribute('data-id');
 			window.location.href = "/profil/" + requesterId;
 		});
 	});
-
+	
 	document.querySelectorAll('.question').forEach(btn => {
 		btn.addEventListener('click', function() {
 			const reason = this.getAttribute('data-reason');
