@@ -74,10 +74,13 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
+    
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private Profile profile;
+
+    @Column(name = "suspended_until")
+    private LocalDateTime suspendedUntil;
 
     // Getters and setters
 
@@ -193,6 +196,14 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public LocalDateTime getSuspendedUntil() {
+        return suspendedUntil;
+    }
+
+    public void setSuspendedUntil(LocalDateTime suspendedUntil) {
+        this.suspendedUntil = suspendedUntil;
+    }
+
 	public Profile getProfile() {
 		return profile;
 	}
@@ -200,6 +211,6 @@ public class User {
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
-
-
+    
+    
 }
