@@ -46,12 +46,11 @@
 					</div>
 				</div>
 				<div class="btn-infos">
-					<a th:href="@{/editProfil}" class="btn-primary-header">Éditer
-						le profil</a> <a th:href="@{/privacy}" class="btn-primary-header">Données
+					<a th:href="@{/editProfil}" class="btn-profil">Modifier Profil</a> <a th:href="@{/privacy}" class="btn-profil">Données
 						privée</a>
 				</div>
 				<div class="btn-infos btn-change-password">
-					<a th:href="@{/changePassword}" class="btn-primary-header">Changer son mot de passe</a>
+					<a th:href="@{/changePassword}" class="btn-profil">Mot de passe</a>
 				</div>
 				
 			</div>
@@ -159,8 +158,6 @@
 						<div class="event-info">
 							<h4 th:text='${eventFirst.name}'></h4>
 							<p th:text='${eventFirst.description}'></p>
-							<button id="edit-event" class="btn-primary-header"  th:data-id='${eventFirst.id}'>En savoir plus <i
-								data-lucide="arrow-right"></i></button>
 						</div>
 					</div>
 					<div id="add-event-btn" class="card add-event-placeholder">
