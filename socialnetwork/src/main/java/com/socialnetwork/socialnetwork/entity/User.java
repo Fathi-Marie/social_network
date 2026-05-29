@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.socialnetwork.socialnetwork.enums.UserRole;
 
@@ -76,7 +77,7 @@ public class User {
     private LocalDateTime updatedAt;
     
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private Profile profile;
 
     @Column(name = "suspended_until")
@@ -141,7 +142,10 @@ public class User {
     }
 
     public String getProfilePictureUrl() {
-        return profilePictureUrl;
+        if (this.profilePictureUrl == null || this.profilePictureUrl.trim().isEmpty()) {
+                return "/img/perso.png";
+            }
+        return this.profilePictureUrl;
     }
 
     public void setProfilePictureUrl(String profilePictureUrl) {
