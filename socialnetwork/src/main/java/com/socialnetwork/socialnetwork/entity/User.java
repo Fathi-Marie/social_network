@@ -2,27 +2,20 @@
 package com.socialnetwork.socialnetwork.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.socialnetwork.socialnetwork.enums.UserRole;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -75,9 +68,8 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Profile profile;
+    @Column(name = "suspended_until")
+    private LocalDateTime suspendedUntil;
 
     // Getters and setters
 
@@ -193,13 +185,11 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-	public Profile getProfile() {
-		return profile;
-	}
+    public LocalDateTime getSuspendedUntil() {
+        return suspendedUntil;
+    }
 
-	public void setProfile(Profile profile) {
-		this.profile = profile;
-	}
-
-
+    public void setSuspendedUntil(LocalDateTime suspendedUntil) {
+        this.suspendedUntil = suspendedUntil;
+    }
 }
