@@ -14,7 +14,7 @@ public interface IProjectMessageGroupRepository extends JpaRepository<ProjectMes
     @Modifying
     @Query("DELETE FROM ProjectMessageGroup g WHERE g.project.id = :projectId")
     void deleteByProjectId(@Param("projectId") UUID projectId);
-    
+
     List<ProjectMessageGroup> findByProjectId(UUID projectId);
     
     @Query("SELECT pmg FROM ProjectMessageGroup pmg WHERE pmg.project.id = :projectId ORDER BY pmg.createdAt ASC")

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IProjectMessageRepository extends JpaRepository<ProjectMessage, UUID> {
+
     @Modifying
     @Query("DELETE FROM ProjectMessage pm WHERE pm.messageGroup.project.id = :projectId")
     void deleteByProjectId(@Param("projectId") UUID projectId);

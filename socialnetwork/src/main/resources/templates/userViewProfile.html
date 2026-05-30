@@ -50,16 +50,16 @@
 				</button>
 
 				<button id="followBtn"
-				        class="btn-primary-full"
-				        th:classappend="${isFollow ? 'unfollow' : 'follow'}"
-				        th:data-id="${userProfile.user.id}"
-				        th:text="${isFollow ? 'Ne plus suivre' : 'Suivre'}">
+						class="btn-primary-full"
+						th:classappend="${isFollow ? 'unfollow' : 'follow'}"
+						th:data-id="${userProfile.user.id}"
+						th:text="${isFollow ? 'Ne plus suivre' : 'Suivre'}">
 					Suivre
 				</button>
-
+				
 				<button id="recommandationBtn"
-				        class="btn-recommandation"
-				        th:data-id="${userProfile.user.id}">
+						class="btn-recommandation"
+						th:data-id="${userProfile.user.id}">
 					Recommandation
 				</button>
 
@@ -114,36 +114,36 @@
 				</div>
 			</div>
 		</div>
-
+		
 		<div class="section-container">
-			<div class="section-header">
-				<h3>
-					<i data-lucide="settings" class="icon-blue"></i> Compétences
-				</h3>
-			</div>
-			<div class="card box-content">
+				<div class="section-header">
+					<h3>
+						<i data-lucide="settings" class="icon-blue"></i> Compétences
+					</h3>
+				</div>
+				<div class="card box-content">
 				<div class="tags-container" >
 					<div th:data-value="${competence.value}" class="competence-container" th:each="competence : ${userProfile.profile.competencies}">
 						<span class="tag"><span th:text="${competence.value}"></span></span>
 					</div>
 				</div>
-			</div>
+				</div>
 		</div>
-
+		
 		<div class="section-container">
-			<div class="section-header">
-				<h3>
-					<i data-lucide="heart" class="icon-blue"></i> Centres d'intérêt
-				</h3>
-			</div>
-			<div class="card box-content">
-				<div class="interests-container">
-					<div th:data-value="${hobby.value}" class="interest-item" th:each="hobby : ${userProfile.profile.interests}" >
-						<span th:text="${hobby.value}"></span>
+				<div class="section-header">
+					<h3>
+						<i data-lucide="heart" class="icon-blue"></i> Centres d'intérêt
+					</h3>
+				</div>
+				<div class="card box-content">
+					<div class="interests-container">
+						<div th:data-value="${hobby.value}" class="interest-item" th:each="hobby : ${userProfile.profile.interests}" >
+							 <span th:text="${hobby.value}"></span>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
 		<div class="section-container">
 			<div class="section-header">
@@ -159,7 +159,7 @@
 				</div>
 			</div>
 		</div>
-
+		
 		<div class="section-container">
 			<div class="section-header">
 				<h3><i data-lucide="rocket" class="icon-blue"></i> Projets publics</h3>
@@ -169,7 +169,7 @@
 				<!-- Projects will be loaded dynamically -->
 			</div>
 		</div>
-
+		
 		<div class="section-container">
 			<div class="section-header">
 				<h3><i data-lucide="star" class="icon-blue"></i> Recommandation</h3>
@@ -195,7 +195,7 @@
 			</div>
 		</div>
 	</section>
-
+	
 	<div id="userRecommandationModal">
 		<div class="modal-card card">
 			<div class="modal-header">
@@ -204,19 +204,19 @@
 			</div>
 			<div class="modal-body">
 				<form th:action="@{/recommandation}" th:object="${recommandation}" method="post"
-				      class="recommandation-form">
+					class="recommandation-form">
 					<input id="userId" name="userRecommandationID"
-					       th:value="${userProfile.user.id}" type="text" style="visibility: hidden;" />
+       				th:value="${userProfile.user.id}" type="text" style="visibility: hidden;" />
 					<div class="input-group">
 						<label for="score">Visibilité</label> <select
 							id="score" class="custom-select"
 							th:field="*{score}">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-					</select>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
 					</div>
 
 					<div class="input-group">

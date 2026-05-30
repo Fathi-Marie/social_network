@@ -26,7 +26,7 @@ public class ProjectMemberService implements IProjectMemberService {
     private final IProjectMemberRepository projectMemberRepository;
     private final IProjectRepository projectRepository;
     private final IUserRepository userRepository;
-     private final IProjectWalletService projectWalletService;
+    private final IProjectWalletService projectWalletService;
 
     public ProjectMemberService(IProjectMemberRepository projectMemberRepository,
                               IProjectRepository projectRepository,
@@ -147,7 +147,7 @@ public class ProjectMemberService implements IProjectMemberService {
     }
 
     @Override
-     @Transactional
+    @Transactional
     public ResponseEntity<Void> leaveProject(UUID projectId, UUID userId) {
         Optional<Project> project = projectRepository.findById(projectId);
         if (!project.isPresent()) {

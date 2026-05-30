@@ -120,7 +120,6 @@ function redirectToPaymentPage(projectId, returnTo) {
     window.location.href = `/projects/${projectId}/payment?returnTo=${encodeURIComponent(returnTo || '/projects')}`;
 }
 
-
 function createProjectCard(project) {
     const card = document.createElement('div');
     card.className = 'project-card';
@@ -183,6 +182,7 @@ function createProjectCard(project) {
             </span>
         </div>
     `;
+
     card.appendChild(actionsWrap);
     return card;
 }
@@ -201,7 +201,7 @@ function closeModal(modalId) {
 
 async function handleJoinProject(e) {
     e.preventDefault();
-    
+
     const projectId = document.getElementById('joinProjectId').value;
     const message = document.getElementById('joinMessage').value.trim();
 
@@ -235,7 +235,7 @@ async function handleJoinProject(e) {
 
         showAlert('Demande d\'adhésion envoyée avec succès!', 'success');
         closeModal('joinProjectModal');
-        
+
         setTimeout(() => {
             loadPublicProjects();
         }, 800);
@@ -287,13 +287,12 @@ function showAlert(message, type) {
     alertDiv.textContent = message;
     alertDiv.style.cssText =
         'position: fixed; top: 20px; right: 20px; padding: 15px 20px; background: #1d9bf0; color: white; border-radius: 8px; z-index: 1000;';
-    
+
     document.body.appendChild(alertDiv);
-    
+
     setTimeout(() => {
         alertDiv.remove();
     }, 3500);
-
 }
 
 function handlePaymentFeedback() {

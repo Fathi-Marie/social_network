@@ -18,5 +18,5 @@ public interface IConnectionService {
 
     ResponseEntity<List<Connection>> getSentRequestsFor(UUID requesterId);
 
-    List<Connection> findAllAcceptedRequestByUserID(UUID requesterId);
+	List<Connection> findAllAcceptedRequestByUserID(UUID requesterId);
 }

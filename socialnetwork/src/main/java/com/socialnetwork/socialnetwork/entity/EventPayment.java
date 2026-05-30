@@ -20,16 +20,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "project_payment")
-public class ProjectPayment {
+@Table(name = "event_payment")
+public class EventPayment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @ManyToOne
     @JoinColumn(name = "payer_id", nullable = false)
@@ -69,12 +69,12 @@ public class ProjectPayment {
         this.id = id;
     }
 
-    public Project getProject() {
-        return project;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public User getPayer() {

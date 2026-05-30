@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.socialnetwork.socialnetwork.entity.Event;
-import com.socialnetwork.socialnetwork.entity.Post;
 import com.socialnetwork.socialnetwork.enums.VisibilityType;
 
 

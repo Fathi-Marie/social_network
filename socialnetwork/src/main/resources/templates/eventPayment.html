@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement du projet</title>
+    <title>Paiement de l'événement</title>
     <link rel="stylesheet" th:href="@{/css/charteGraphique.css}">
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/project.css}">
@@ -14,32 +14,32 @@
 
     <main class="projects-container" style="max-width: 880px;">
         <input type="hidden" id="metaWalletBalance" th:value="${currentUserWalletBalance}">
-        <input type="hidden" id="metaProjectPrice" th:value="${project.price}">
+        <input type="hidden" id="metaEventPrice" th:value="${event.price}">
         <section class="projects-section">
             <div class="project-card" style="display: grid; gap: 1.25rem;">
                 <div>
-                    <span class="visibility" style="background-color: rgba(234, 179, 8, 0.12); border-color: rgba(234, 179, 8, 0.35); color: #b45309;">Projet payant</span>
-                    <h1 style="margin-top: 1rem;" th:text="${project.name}">Nom du projet</h1>
-                    <p class="description" th:text="${project.description}">Description</p>
+                    <span class="visibility" style="background-color: rgba(234, 179, 8, 0.12); border-color: rgba(234, 179, 8, 0.35); color: #b45309;">Événement payant</span>
+                    <h1 style="margin-top: 1rem;" th:text="${event.name}">Nom de l'événement</h1>
+                    <p class="description" th:text="${event.description}">Description</p>
                 </div>
 
                 <div class="metadata" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
                     <div class="card" style="padding: 1rem;">
                         <p style="margin: 0; color: var(--text-dim);">Montant à payer</p>
-                        <strong style="font-size: 1.5rem;" th:text="${#numbers.formatDecimal(project.price, 1, 2)} + ' EUR'">12.00 EUR</strong>
+                        <strong style="font-size: 1.5rem;" th:text="${#numbers.formatDecimal(event.price, 1, 2)} + ' EUR'">12.00 EUR</strong>
                     </div>
                     <div class="card" style="padding: 1rem;">
                         <p style="margin: 0; color: var(--text-dim);">Votre solde projet</p>
                         <strong style="font-size: 1.5rem;" th:text="${#numbers.formatDecimal(currentUserWalletBalance, 1, 2)} + ' EUR'">0.00 EUR</strong>
                     </div>
                     <div class="card" style="padding: 1rem;">
-                        <p style="margin: 0; color: var(--text-dim);">Créé par</p>
-                        <strong th:text="${project.creator.firstName + ' ' + project.creator.lastName}">Créateur</strong>
+                        <p style="margin: 0; color: var(--text-dim);">Organisé par</p>
+                        <strong th:text="${event.creator.firstName + ' ' + event.creator.lastName}">Créateur</strong>
                     </div>
                 </div>
 
-                <form id="projectPaymentForm" class="modal-card card project-payment-form" novalidate>
-                    <input type="hidden" id="paymentProjectId" th:value="${project.id}">
+                <form id="eventPaymentForm" class="modal-card card project-payment-form" novalidate>
+                    <input type="hidden" id="paymentEventId" th:value="${event.id}">
                     <input type="hidden" id="paymentReturnTo" th:value="${returnTo}">
 
                     <div class="modal-header project-payment-form-header">
@@ -121,14 +121,14 @@
                     </div>
 
                     <div class="actions project-payment-actions">
-                        <button type="submit" class="btn-primary" id="paySubmitBtn" th:text="'Payer ' + ${#numbers.formatDecimal(project.price, 1, 2)} + ' EUR'">Payer</button>
+                        <button type="submit" class="btn-primary" id="paySubmitBtn" th:text="'Payer ' + ${#numbers.formatDecimal(event.price, 1, 2)} + ' EUR'">Payer</button>
                     </div>
                 </form>
             </div>
         </section>
     </main>
 
-    <script th:src="@{/js/projectPayment.js}"></script>
+    <script th:src="@{/js/eventPayment.js}"></script>
     <div th:replace="~{fragments/footer :: footer-fragment}"></div>
 </body>
 </html>

@@ -45,7 +45,6 @@ public class MailService implements IMailService {
 		props.put("mail.smtp.host", host);
 		props.put("mail.smtp.port", "587");
 
-
 		session = Session.getInstance(props, new jakarta.mail.Authenticator() {
 			protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(username, password);

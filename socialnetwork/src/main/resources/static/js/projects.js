@@ -116,12 +116,13 @@ async function loadUserProjects() {
         });
 
         if (!response.ok) {
-            if (response.status === 204) {
-                // No projects
-                displayNoProjects();
-                return;
-            }
             throw new Error('Failed to load projects');
+        }
+        
+        if (response.status === 204) {
+              // No projects
+              displayNoProjects();
+              return;
         }
 
         const projects = await response.json();
@@ -901,47 +902,6 @@ function getMemberRoleLabel(role) {
         'MEMBER': 'Membre'
     };
     return labels[role] || role;
-}
-
-async function loadProjectSkills(projectId) {
-    try {
-        const response = await fetch(`/api/project/${projectId}/skills`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            return;
-        }
-
-        const skills = await response.json();
-        displayProjectSkills(projectId, skills);
-    } catch (error) {
-        console.error('Error loading skills:', error);
-    }
-}
-
-function displayProjectSkills(projectId, skills) {
-    const skillsContainer = document.getElementById(`skills-${projectId}`);
-    if (!skillsContainer) return;
-
-    if (!skills || skills.length === 0) {
-        skillsContainer.innerHTML = '';
-        return;
-    }
-
-    const skillsHTML = skills.map(skill =>
-        `<span class="skill-badge">${escapeHtml(skill.skillName)}</span>`
-    ).join('');
-
-    skillsContainer.innerHTML = `
-        <div class="skills-section">
-            <strong>Compétences recherchées:</strong>
-            <div class="skills-list">${skillsHTML}</div>
-        </div>
-    `;
 }
 
 async function loadProjectSkills(projectId) {

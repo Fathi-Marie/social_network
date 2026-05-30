@@ -128,7 +128,7 @@ public class ConnectionService implements IConnectionService {
         List<Connection> sent = repository.findByRequester_IdAndStatus(requesterId, ConnectionStatus.PENDING);
         return new ResponseEntity<List<Connection>>(sent, HttpStatus.OK);
     }
-
+    
     @Override
     public List<Connection> findAllAcceptedRequestByUserID(UUID requesterId) {
         List<Connection> acceptedRequest = repository.findAllAcceptedRequestByUserID(requesterId);

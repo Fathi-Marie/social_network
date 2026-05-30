@@ -38,6 +38,11 @@ public class ProjectService implements IProjectService {
     private final IUserRepository userRepository;
     private final IProjectSkillService projectSkillService;
     private final IPostService postService;
+    private final IProjectPaymentService projectPaymentService;
+    private final IProjectWalletService projectWalletService;
+    private final IProjectMessageRepository projectMessageRepository;
+    private final IProjectMessageGroupRepository projectMessageGroupRepository;
+    private final IProjectRequestRepository projectRequestRepository;
 
     public ProjectService(IProjectRepository projectRepository, 
                          IProjectMemberRepository projectMemberRepository,
@@ -172,7 +177,7 @@ public class ProjectService implements IProjectService {
         }
         
         if (memberProjects.isPresent()) {
-             // Add member projects that are not already added (to avoid duplicates).
+            // Add member projects that are not already added (to avoid duplicates).
             // Skip rows whose project was removed (orphan project_member) — @NotFound yields null project.
             for (ProjectMember member : memberProjects.get()) {
                 Project p = member.getProject();

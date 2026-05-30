@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('projectPaymentForm');
+    const form = document.getElementById('eventPaymentForm');
     if (!form) {
         return;
     }
 
     const walletBalance = parseFloat(document.getElementById('metaWalletBalance')?.value || '0') || 0;
-    const projectPrice = parseFloat(document.getElementById('metaProjectPrice')?.value || '0') || 0;
+    const eventPrice = parseFloat(document.getElementById('metaEventPrice')?.value || '0') || 0;
 
     const modeRadios = form.querySelectorAll('input[name="paymentMode"]');
     const walletSection = document.getElementById('walletPaySection');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletHint = document.getElementById('walletPayHint');
 
     if (walletHint) {
-        walletHint.textContent = 'Solde disponible : ' + walletBalance.toFixed(2) + ' EUR. Montant du projet : ' + projectPrice.toFixed(2) + ' EUR.';
+        walletHint.textContent = 'Solde disponible : ' + walletBalance.toFixed(2) + ' EUR. Montant de l\'événement : ' + eventPrice.toFixed(2) + ' EUR.';
     }
 
     function updateModeUi() {
@@ -45,11 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const wRadio = document.getElementById('modeWalletRadio');
         const walletTile = wRadio ? wRadio.closest('.payment-mode-tile') : null;
         if (walletTile) {
-            walletTile.style.opacity = projectPrice > 0 && walletBalance >= projectPrice ? '1' : '0.45';
-            walletTile.style.pointerEvents = projectPrice <= 0 || walletBalance < projectPrice ? 'none' : '';
+            walletTile.style.opacity = eventPrice > 0 && walletBalance >= eventPrice ? '1' : '0.45';
+            walletTile.style.pointerEvents = eventPrice <= 0 || walletBalance < eventPrice ? 'none' : '';
         }
         if (wRadio) {
-            wRadio.disabled = projectPrice <= 0 || walletBalance < projectPrice;
+            wRadio.disabled = eventPrice <= 0 || walletBalance < eventPrice;
         }
     }
 
@@ -96,15 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
 
-    form.addEventListener('submit', handleProjectPayment);
+    form.addEventListener('submit', handleEventPayment);
 });
 
-async function handleProjectPayment(event) {
+async function handleEventPayment(event) {
     event.preventDefault();
 
-    const form = document.getElementById('projectPaymentForm');
-    const projectId = document.getElementById('paymentProjectId').value;
-    const returnTo = document.getElementById('paymentReturnTo').value || '/projects';
+    const form = document.getElementById('eventPaymentForm');
+    const eventId = document.getElementById('paymentEventId').value;
+    const returnTo = document.getElementById('paymentReturnTo').value || '/feed';
     const mode = form.querySelector('input[name="paymentMode"]:checked')?.value || 'new';
 
     const payload = { returnTo };
@@ -140,7 +140,7 @@ async function handleProjectPayment(event) {
     }
 
     try {
-        const response = await fetch(`/api/project/${projectId}/payment`, {
+        const response = await fetch(`/api/event/${eventId}/payment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ async function handleProjectPayment(event) {
             return;
         }
 
-        const target = data.redirectUrl || '/projects?payment=success';
+        const target = data.redirectUrl || '/feed?payment=success';
         window.location.href = target;
     } catch (error) {
         console.error('Payment error:', error);
