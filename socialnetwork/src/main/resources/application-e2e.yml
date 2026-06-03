@@ -1,0 +1,38 @@
+# In-memory stack for Nightwatch E2E — no external DB or SMTP required.
+spring:
+  datasource:
+    url: jdbc:h2:mem:socialnetwork_e2e;MODE=MySQL;NON_KEYWORDS=VALUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  mail:
+    host: localhost
+    username: ""
+    password: ""
+  h2:
+    console:
+      enabled: false
+
+server:
+  # 8081 avoids conflict with other dev servers often bound to 8080 (e.g. Python/gunicorn)
+  port: ${E2E_SERVER_PORT:8081}
+
+front:
+  base:
+    url: http://localhost:${E2E_SERVER_PORT:8081}
+
+file-directory: upload-e2e/
+
+spring.devtools.restart.enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.socialnetwork: INFO

@@ -59,12 +59,12 @@
 	</aside>
 
 	<main class="feed-main">
-		<div th:if="${session.userId != null}" class="publish-card card" id="publishArea">
-			<form th:action="@{/post}" method="post" enctype="multipart/form-data">
+		<div th:if="${session.userId != null}" class="publish-card card" id="publishArea" data-testid="feed-publish-area">
+			<form th:action="@{/post}" method="post" enctype="multipart/form-data" data-testid="feed-post-form">
 				<div class="publish-top">
 					<img th:src="@{${userAvatar}}" class="avatar-small">
 					<div class="publish-input-area">
-						<textarea name="content" placeholder="Quoi de neuf ?" required></textarea>
+						<textarea name="content" data-testid="feed-post-content" placeholder="Quoi de neuf ?" required></textarea>
 					</div>
 				</div>
 				<div class="publish-bottom">
@@ -92,7 +92,7 @@
 							<label class="checkbox-label"> <input type="checkbox" name="allowComments" value="true" checked /> <span>Commentaires</span></label>
 						</div>
 					</div>
-					<button type="submit" class="btn-primary">Publier</button>
+					<button type="submit" class="btn-primary btn-publish" data-testid="feed-post-submit">Publier</button>
 				</div>
 			</form>
 		</div>
@@ -113,7 +113,7 @@
 				</div>
 			</div>
 
-		<div class="posts-list" id="postsContainer">
+		<div class="posts-list" id="postsContainer" data-testid="feed-posts-list">
 			<article th:each="post : ${posts}" class="post-card card" th:attr="data-post-card-id=${post.id}, data-post-visibility=${post.visibilityType}, data-post-createdAt=${post.createdAt}, data-auhtor-lastname=${post.author.lastName}, data-author-firstName=${post.author.firstName}, data-post-content=${post.content}"> 
 				<div class="post-header">
 					<img th:src="@{${post.author.profilePictureUrl}}" class="avatar-small">

@@ -32,9 +32,9 @@
 				</div>
 
 				<form th:action="@{/login}" th:object="${user}" method="post"
-					class="login-form">
+					class="login-form" data-testid="login-form">
 
-					<div class="alert-error" th:if="${error}">
+					<div class="alert-error" th:if="${error}" data-testid="login-error">
 						<i data-lucide="alert-circle"></i> <span th:text="${error}">Email
 							ou mot de passe incorrect</span>
 					</div>
@@ -64,7 +64,7 @@
 						</div>
 					</div>
 
-					<button type="submit" class="btn-login-submit">
+					<button type="submit" class="btn-login-submit" data-testid="login-submit">
 						<span>Se connecter</span> <i data-lucide="arrow-right"></i>
 					</button>
 				</form>

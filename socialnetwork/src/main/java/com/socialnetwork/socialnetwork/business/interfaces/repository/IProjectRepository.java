@@ -27,18 +27,18 @@ public interface IProjectRepository extends JpaRepository<Project, UUID> {
     /**
      * Find projects visible to a user (PUBLIC, PRIVATE owned by user, or FRIENDS if connected)
      */
-    @Query(value = """
-            SELECT p.* FROM project p
-            WHERE p.visibility_type = 'PUBLIC'
-            OR (p.visibility_type = 'PRIVATE'
-                AND CAST(p.creator_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userId AS CHAR(36)) COLLATE utf8mb4_bin)
-            OR (p.visibility_type = 'FRIENDS'
-                AND CAST(p.creator_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userId AS CHAR(36)) COLLATE utf8mb4_bin)
-            OR (p.visibility_type = 'FRIENDS' AND EXISTS (
-                SELECT 1 FROM project_member pm
-                WHERE CAST(pm.project_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(p.id AS CHAR(36)) COLLATE utf8mb4_bin
-                  AND CAST(pm.user_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userId AS CHAR(36)) COLLATE utf8mb4_bin
-            ))
-            """, nativeQuery = true)
+    @Query("""
+            SELECT p FROM Project p
+            WHERE p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.PUBLIC
+               OR (p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.PRIVATE
+                   AND p.creator.id = :userId)
+               OR (p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.FRIENDS
+                   AND p.creator.id = :userId)
+               OR (p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.FRIENDS
+                   AND EXISTS (
+                       SELECT 1 FROM ProjectMember pm
+                       WHERE pm.project = p AND pm.user.id = :userId
+                   ))
+            """)
     Optional<List<Project>> findProjectsVisibleToUser(@Param("userId") UUID userId);
 }

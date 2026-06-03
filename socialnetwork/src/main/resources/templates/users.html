@@ -23,9 +23,9 @@
                     <form th:action="@{/users/search}" method="get" class="search-bar-wrapper">
                         <div class="search-input-group">
                             <i data-lucide="search"></i>
-                            <input id="directorySearch" type="text" name="query" placeholder="Rechercher par nom...">
+                            <input id="directorySearch" data-testid="directory-search-input" type="text" name="query" placeholder="Rechercher par nom...">
                         </div>
-                        <button type="submit" class="btn-publish">Rechercher</button>
+                        <button type="submit" class="btn-publish" data-testid="directory-search-submit">Rechercher</button>
                     </form>
                 </div>
             </section>

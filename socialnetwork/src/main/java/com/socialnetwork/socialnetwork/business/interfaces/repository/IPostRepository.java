@@ -10,35 +10,24 @@ import org.springframework.data.repository.query.Param;
 import com.socialnetwork.socialnetwork.entity.Post;
 
 public interface IPostRepository extends JpaRepository<Post, UUID> {
-	@Query(value = """
-			  SELECT p.* FROM post p
-			  WHERE p.visibility_type = 'PUBLIC'
-			  OR (p.visibility_type = 'PRIVATE'
-					AND CAST(p.author_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin)
-			  OR (p.visibility_type = 'FRIENDS'
-					AND CAST(p.author_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin)
-			  OR (p.visibility_type = 'FRIENDS'
-					AND EXISTS (
-			        	SELECT 1
-			        	FROM connection c
-			        	WHERE c.connection_status = 'ACCEPTED'
-			          	AND (
-			                (CAST(c.requester_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(p.author_id AS CHAR(36)) COLLATE utf8mb4_bin
-			                 AND CAST(c.receiver_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin)
-			             OR (CAST(c.receiver_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(p.author_id AS CHAR(36)) COLLATE utf8mb4_bin
-			                 AND CAST(c.requester_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin)
-			          	)
-			    )
-			   );
-			   """, nativeQuery = true)
+	@Query("""
+			SELECT p FROM Post p
+			WHERE p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.PUBLIC
+			   OR (p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.PRIVATE
+			       AND p.author.id = :userID)
+			   OR (p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.FRIENDS
+			       AND p.author.id = :userID)
+			   OR (p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.FRIENDS
+			       AND EXISTS (
+			           SELECT 1 FROM Connection c
+			           WHERE c.status = com.socialnetwork.socialnetwork.enums.ConnectionStatus.ACCEPTED
+			             AND ((c.requester.id = p.author.id AND c.receiver.id = :userID)
+			               OR (c.receiver.id = p.author.id AND c.requester.id = :userID))
+			       ))
+			""")
 	List<Post> findAllPostOfUser(@Param("userID") UUID userID);
 
-	@Query(value = """
-			SELECT p.*
-			FROM post p
-			WHERE
-			  p.visibility_type = 'PUBLIC'
-			""", nativeQuery = true)
+	@Query("SELECT p FROM Post p WHERE p.visibilityType = com.socialnetwork.socialnetwork.enums.VisibilityType.PUBLIC")
 	List<Post> findByVisibilityPublic();
 
 }

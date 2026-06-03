@@ -27,7 +27,7 @@
 						l'ISEP.</p>
 				</div>
 				
-				<div class="alert-error" th:if="${error}">
+				<div class="alert-error" th:if="${error}" data-testid="register-error">
 							<i data-lucide="alert-circle"></i> <span th:text="${error}"></span>
 						</div>
 						
@@ -36,7 +36,7 @@
 						</div>
 
 				<form th:action="@{/register}" th:object="${user}" method="post"
-					class="login-form">
+					class="login-form" data-testid="register-form">
 
 					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
 
@@ -99,7 +99,7 @@
 						</div>
 					</div>
 
-					<button type="submit" class="btn-login-submit">
+					<button type="submit" class="btn-login-submit" data-testid="register-submit">
 						<span>Créer mon compte</span> <i data-lucide="rocket"></i>
 					</button>
 				</form>

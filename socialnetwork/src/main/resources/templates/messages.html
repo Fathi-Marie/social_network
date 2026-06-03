@@ -21,7 +21,7 @@
         <!-- Conversations List -->
         <aside class="conversations-sidebar">
             <div class="sidebar-header">
-                <h2>Messages</h2>
+                <h2 data-testid="messages-page-title">Messages</h2>
                 <button class="btn-new-conversation" id="newMessageBtn" title="Nouvelle conversation">
                     <i class="fas fa-plus"></i>
                 </button>
@@ -29,7 +29,7 @@
 
             <!-- Tabs for switching between Private and Project messages -->
             <div class="message-tabs">
-                <button class="tab-btn active" data-tab="private">
+                <button class="tab-btn active" data-tab="private" id="tab-private">
                     <i class="fas fa-user"></i> Privé
                 </button>
                 <button class="tab-btn" data-tab="projects">

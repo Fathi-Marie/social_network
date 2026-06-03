@@ -28,7 +28,7 @@
 			<i data-lucide="check-circle"></i> <span th:text="${information}"></span>
 		</div>
 
-		<form th:action="@{/privacy}" method="post" class="privacy-form">
+		<form th:action="@{/privacy}" method="post" class="privacy-form" data-testid="privacy-form">
 
 			<section class="form-section card">
 				<h3><i data-lucide="eye"></i> Visibilité des informations</h3>
@@ -120,7 +120,7 @@
 			</section>
 
 			<div class="form-actions">
-				<button type="submit" class="btn-primary-large">Sauvegarder</button>
+				<button type="submit" class="btn-primary-large" data-testid="privacy-save-btn">Sauvegarder les modifications</button>
 			</div>
 		</form>
 	</div>
