@@ -26,7 +26,7 @@
 			<h2 class="user-fullname" th:text="${userProfile.user.firstName + ' ' + userProfile.user.lastName}">Alexandre Dupont</h2>
 			<p class="user-studies" th:text="${userProfile.profile.profession}">Étudiant Ingénieur - ISEP</p>
 
-			<div class="location-tag" th:if="${userProfile.privacySettings.canSeeLocation}">
+			<div class="location-tag" th:if="${userProfile.privacySettings != null && userProfile.privacySettings.canSeeLocation}">
 				<i data-lucide="map-pin"></i>
 				<span th:text="${userProfile.profile.location}">Paris, France</span>
 			</div>
@@ -63,7 +63,7 @@
 					Recommandation
 				</button>
 
-				<a th:if="${userProfile.privacySettings.allowDirectMessages == 'true'}"
+				<a th:if="${userProfile.privacySettings != null && userProfile.privacySettings.allowDirectMessages == 'true'}"
 				   th:href="@{/messages(target=${userProfile.user.id})}"
 				   class="btn-primary-full"
 				   style="background: rgba(255,255,255,0.1); border: 1px solid var(--border);">
@@ -79,7 +79,7 @@
 					<div class="item-left"><i data-lucide="globe"></i> <span>Portfolio</span></div>
 					<i data-lucide="external-link" class="arrow-right"></i>
 				</a>
-				<div class="network-item" th:if="${userProfile.privacySettings.canSeeEmail}">
+				<div class="network-item" th:if="${userProfile.privacySettings != null && userProfile.privacySettings.canSeeEmail}">
 					<div class="item-left"><i data-lucide="mail"></i> <span th:text="${userProfile.user.email}">Email</span></div>
 				</div>
 			</div>
@@ -185,13 +185,13 @@
 			</div>
 		</div>
 
-		<div class="section-container" th:if="${userProfile.privacySettings.canSeeBirthdate}">
+		<div class="section-container" th:if="${userProfile.privacySettings != null && userProfile.privacySettings.canSeeBirthdate}">
 			<div class="section-header">
 				<h3><i data-lucide="calendar" class="icon-blue"></i> Informations</h3>
 			</div>
 			<div class="card box-content">
 				<p><strong>Date de naissance :</strong> <span th:text="${userProfile.profile.birthdate}">01/01/2000</span></p>
-				<p th:if="${userProfile.privacySettings.canSeePhone}"><strong>Téléphone :</strong> <span th:text="${userProfile.profile.phoneNumber}">Non renseigné</span></p>
+				<p th:if="${userProfile.privacySettings != null && userProfile.privacySettings.canSeePhone}"><strong>Téléphone :</strong> <span th:text="${userProfile.profile.phoneNumber}">Non renseigné</span></p>
 			</div>
 		</div>
 	</section>

@@ -47,12 +47,12 @@ var modal = byId('userRecommandationModal');
 var closeRecommandationModal = byId('closeUserRecommandationModal');
 var recommandationBtn = byId('recommandationBtn');
 
-function openModal(){ if(modal) modal.style.display = 'flex'; }
-function closeModal(){ if(modal) modal.style.display = 'none'; currentEditId = null; }
+function openRecommandationModal(){ if(modal) modal.style.display = 'flex'; }
+function closeRecommandationModalFn(){ if(modal) modal.style.display = 'none'; currentEditId = null; }
 
 
- if(closeRecommandationModal) closeRecommandationModal.addEventListener('click', function(){ closeModal(); });
- if(recommandationBtn) recommandationBtn.addEventListener('click', function(){ openModal(); });
+ if(closeRecommandationModal) closeRecommandationModal.addEventListener('click', function(){ closeRecommandationModalFn(); });
+ if(recommandationBtn) recommandationBtn.addEventListener('click', function(){ openRecommandationModal(); });
 
 // Load user projects dynamically
 document.addEventListener('DOMContentLoaded', function() {

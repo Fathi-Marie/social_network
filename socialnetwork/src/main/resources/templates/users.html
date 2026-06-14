@@ -67,7 +67,7 @@
                 <article th:each="u : ${users}" class="user-card card">
                     <div class="user-card-top">
                         <div class="avatar-container">
-                            <img th:src="${u.profilePictureUrl != null ? u.profilePictureUrl : '/images/default-avatar.png'}"
+                            <img th:src="${u.profilePictureUrl != null ? u.profilePictureUrl : './../static/img/perso.png'}"
                                  class="avatar-directory"
                                  alt="Avatar">
                             <span class="online-badge"></span>
@@ -81,7 +81,8 @@
 
                     <div class="user-card-body">
                         <h3 th:text="${u.firstName} + ' ' + ${u.lastName}"></h3>
-                        <span class="user-promo-label" th:text="'Promo ' + ${u.profile.promoYear}"> </span> <p class="user-major-label" th:text="${u.profile.isepSpecialization}"></p>
+                        <span class="user-promo-label" th:if="${u.profile == null}"></span> <p class="user-major-label" th:if="${u.profile == null}"></p>
+                        <span class="user-promo-label" th:if="${u.profile != null}" th:text="'Promo ' + ${u.profile.promoYear}"> </span> <p class="user-major-label" th:if="${u.profile != null}" th:text="${u.profile.isepSpecialization}"></p>
                     </div>
 
                     <div class="user-card-footer">
