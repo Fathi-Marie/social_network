@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/charteGraphique.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header-fragment"></div>
+
+<main class="admin-grid">
+    <section class="admin-card main-admin-section">
+        <div class="admin-header">
+            <h2>Administration</h2>
+            <div class="tab-controls">
+                <button id="tabKpis" class="btn btn-outline">KPIs</button>
+                <button id="tabUsers" class="btn btn-outline">Utilisateurs</button>
+            </div>
+        </div>
+
+        <div id="tabContent">
+            <div id="kpisTab">
+                <div class="stats-row">
+                    <div class="stat">
+                        <div class="label">Total users</div>
+                        <div id="totalUsers" class="value">...</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Total posts</div>
+                        <div id="totalPosts" class="value">...</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Active users</div>
+                        <div id="activeUsers" class="value">...</div>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Graphiques (30 derniers jours)</h3>
+                <div class="charts-row">
+                    <div class="admin-card chart-box"><canvas id="usersChart"></canvas></div>
+                    <div class="admin-card chart-box"><canvas id="postsChart"></canvas></div>
+                </div>
+
+                <div id="recentList" class="admin-card recent-activity">Chargement...</div>
+            </div>
+
+            <div id="usersTab" style="display:none;">
+                <div class="admin-card">
+                    <div class="search-bar">
+                        <input id="searchInput" placeholder="Rechercher..." />
+                        <button id="searchBtn" class="btn btn-primary">Rechercher</button>
+                    </div>
+                    <div id="usersTableWrapper">
+                        <div class="table-responsive">
+                            <table class="admin-users-table">
+                                <thead>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Statut</th>
+                                    <th>Suspension</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="usersTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="usersPager" class="pagination-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <p id="confirmMessage">Confirmer l'action ?</p>
+        <div class="modal-actions">
+            <button id="confirmCancel" class="btn btn-outline">Annuler</button>
+            <button id="confirmOk" class="btn btn-primary">Confirmer</button>
+        </div>
+    </div>
+</div>
+
+<div id="suspendModal" class="modal">
+    <div class="modal-content">
+        <p>Suspendre cet utilisateur pour (jours)</p>
+        <input id="suspendDays" type="number" min="1" value="7" />
+        <div class="modal-actions">
+            <button id="suspendCancel" class="btn btn-outline">Annuler</button>
+            <button id="suspendOk" class="btn btn-primary">Suspendre</button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer-fragment"></div>
+
+<script th:src="@{/js/admin-dashboard.js}"></script>
+<script th:src="@{/js/admin-users.js}"></script>
+</body>
+</html>

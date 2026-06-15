@@ -11,14 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IPostRepository;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IMediaService;
@@ -48,10 +49,11 @@ public class PostController {
     }
     
     @PostMapping("/post")
-	public String handleCreatePost(HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
-		HttpSession session = request.getSession(false);
+	public RedirectView handleCreatePost(Model model, HttpServletRequest request, @RequestParam("content") String content, @RequestParam("postVideoUrl") MultipartFile postVideoUrl, @RequestParam("postImageUrl") MultipartFile postImageUrl, @RequestParam("postFileUrl") MultipartFile postFileUrl, @RequestParam(value = "visibilityType", required = false) String visibilityTypeStr, @RequestParam(value = "allowComments", required = false) String[] allowCommentsValues) {
+		System.out.println("post" + postFileUrl);
+    	HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) {
-			return "login";
+			return new RedirectView("/login");
 		}
 		try {
 			UUID userId = UUID.fromString(session.getAttribute("userId").toString());
@@ -114,12 +116,29 @@ public class PostController {
 				this.mediaService.create(imageMedia);
 			}
 			
+			if(postFileUrl != null && !postFileUrl.isEmpty()) {
+				System.out.println("postFile  : " + postFileUrl);
+				String uploadFileUrl = FileUpload.UploadFile(postFileUrl);
+				long fileSize = postFileUrl.getSize();
+				String extensionFile = postFileUrl.getContentType();
+				
+				Media fileMedia = new Media();
+				fileMedia.setFileSize(fileSize);
+				fileMedia.setFileUrl(uploadFileUrl);
+				fileMedia.setMediaType(MediaType.DOCUMENT);
+				fileMedia.setMimeType(extensionFile);
+				fileMedia.setPost(savePost);
+				fileMedia.setUser(author.getBody());
+				
+				this.mediaService.create(fileMedia);
+			}
+			
 			
 			
 		} catch (Exception e) {
-			return "accueil";
+			return new RedirectView("/");
 		}
-		return "accueil";
+		return new RedirectView("/feed");
 	}
 
     @GetMapping("/post/{id}")

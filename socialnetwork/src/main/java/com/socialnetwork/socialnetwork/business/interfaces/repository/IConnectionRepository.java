@@ -21,4 +21,21 @@ public interface IConnectionRepository extends JpaRepository<Connection, UUID> {
 
     @Query("select c from Connection c where ((c.requester.id = :a and c.receiver.id = :b) or (c.requester.id = :b and c.receiver.id = :a))")
     List<Connection> findAnyBetween(@Param("a") UUID a, @Param("b") UUID b);
+
+    @Query(value = """
+            SELECT CASE
+                WHEN CAST(requester_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin THEN receiver_id
+                ELSE requester_id
+            END
+            FROM connection
+            WHERE connection_status = 'ACCEPTED'
+            AND (CAST(requester_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin
+                 OR CAST(receiver_id AS CHAR(36)) COLLATE utf8mb4_bin = CAST(:userID AS CHAR(36)) COLLATE utf8mb4_bin)
+            """, nativeQuery = true)
+    List<UUID> findAllFriendsId(@Param("userID") UUID userID);
+    
+    @Query(value = """
+            select * from `connection` where  requester_id = :userID and connection_status = 'ACCEPTED' or receiver_id = :userID and connection_status = 'ACCEPTED';
+            """, nativeQuery = true)
+    List<Connection> findAllAcceptedRequestByUserID(@Param("userID") UUID userID);
 }

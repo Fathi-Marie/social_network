@@ -43,7 +43,7 @@ public class CommentController {
         UUID parentCommentId = (parentCommentIdStr != null && !parentCommentIdStr.isEmpty()) ? UUID.fromString(parentCommentIdStr) : null;
 
         return commentService.createComment(userId, postId, content, parentCommentId);
-        }
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(HttpServletRequest request,

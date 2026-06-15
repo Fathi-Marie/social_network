@@ -1,0 +1,71 @@
+package com.socialnetwork.socialnetwork.dto;
+
+import com.socialnetwork.socialnetwork.enums.VisibilityType;
+import java.math.BigDecimal;
+import java.util.List;
+
+public class ProjectDto {
+    private String name;
+    private String description;
+    private VisibilityType visibility;
+    private List<String> skills;
+    private Boolean isPaid;
+    private BigDecimal price;
+
+    public ProjectDto() {
+    }
+
+    public ProjectDto(String name, String description, VisibilityType visibility) {
+        this.name = name;
+        this.description = description;
+        this.visibility = visibility;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public VisibilityType getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(VisibilityType visibility) {
+        this.visibility = visibility;
+    }
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public Boolean getIsPaid() {
+        return isPaid;
+    }
+
+    public void setIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+}

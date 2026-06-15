@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function(){
     document.addEventListener('click', function(e){
         var btn = e.target.closest && (e.target.closest('button[data-post-id]') || e.target.closest('button.btn-icon'));
         if(!btn) return;
+        // Skip if this is a comment toggle button or reaction button
+        if(btn.classList.contains('btn-toggle-comments') || btn.classList.contains('reaction-btn')) return;
         var postId = btn.getAttribute('data-post-id');
         if(!postId) return;
         // if this is a delete button
@@ -170,4 +172,124 @@ document.addEventListener('DOMContentLoaded', function(){
 		}
 	}
 
+
+    const eventActions = document.querySelectorAll(".eventAction");
+
+
+    eventActions.forEach(el => {
+        el.addEventListener('click', GoToEvent);
+    });
+
+
+
+console.log(preferences)
+preferences.addEventListener("change", function() {
+	let val = preferences.value;
+	console.log(val)
+
+	if(val == "Popularité"){
+		sortPostsByReactions();
+	}
+	else if(val == "Commentaires"){
+		sortPostsByComments();
+	}
+	else{
+		sortPostsByDates();
+	}
 });
+
+function sortPostsByReactions() {
+	const container = document.querySelector('.posts-list');
+	const posts = Array.from(container.querySelectorAll('.post-card'));
+
+	posts.sort((a, b) => {
+		const aTotal = parseInt(
+			a.querySelector('.reaction-total')?.innerText.charAt(0) || 0
+		);
+		const bTotal = parseInt(
+			b.querySelector('.reaction-total')?.innerText.charAt(0) || 0
+		);
+
+		return bTotal - aTotal;
+	});
+	console.log(posts)
+	posts.forEach(post => container.appendChild(post));
+}
+
+function sortPostsByComments() {
+	const container = document.querySelector('.posts-list');
+	const posts = Array.from(container.querySelectorAll('.post-card'));
+
+	posts.sort((a, b) => {
+		console.log(a.querySelector('.comment-count')?.innerText)
+		const aTotal = parseInt(
+			a.querySelector('.comment-count')?.innerText || 0
+		);
+		const bTotal = parseInt(
+			b.querySelector('.comment-count')?.innerText || 0
+		);
+
+		return bTotal - aTotal;
+	});
+
+	posts.forEach(post => container.appendChild(post));
+}
+
+function sortPostsByDates() {
+	const container = document.querySelector('.posts-list');
+    const posts = Array.from(container.querySelectorAll(".post-card"));
+
+    posts.sort((a, b) => {
+        const dateA = new Date(a.dataset.postCreatedat);
+        const dateB = new Date(b.dataset.postCreatedat);
+        return dateB - dateA; // DESC (récent → ancien)
+    });
+
+    posts.forEach(post => container.appendChild(post));
+}
+
+});
+
+const postInputSearch = document.getElementById("post-search");
+const post = document.querySelectorAll(".post-card.card");
+const annoucement = document.querySelectorAll(".event-card.card");
+
+postInputSearch.addEventListener('input', function() {
+	let inputValue = postInputSearch.value.toLowerCase();
+	post.forEach(elm => {
+		let firstName = elm.getAttribute('data-author-firstname').toLowerCase();
+		let lastName = elm.getAttribute('data-auhtor-lastname').toLowerCase();
+		let postVisibility = elm.getAttribute('data-post-visibility').toLowerCase();
+		let postContent = elm.getAttribute('data-post-content').toLowerCase();
+
+		if (firstName.includes(inputValue) || lastName.includes(inputValue)
+			|| postContent.includes(inputValue) || postVisibility.includes(inputValue))  {
+			elm.style.display = "";
+		}
+		else {
+			elm.style.display = "none";
+		}
+	})
+	
+	annoucement.forEach(elm => {
+		let firstName = elm.getAttribute('data-creator-firstname').toLowerCase();
+		let lastName = elm.getAttribute('data-creator-lastname').toLowerCase();
+		let eventName = elm.getAttribute('data-event-name').toLowerCase();
+		let eventLocation = elm.getAttribute('data-event-location').toLowerCase();
+		let eventVisibility = elm.getAttribute('data-event-visibility').toLowerCase();
+
+		if (firstName.includes(inputValue) || lastName.includes(inputValue) || eventName.includes(inputValue)
+			|| eventLocation.includes(inputValue) || eventVisibility.includes(inputValue)) {
+			elm.style.display = "";
+		}
+		else {
+			elm.style.display = "none";
+		}
+	})
+	
+	
+
+})
+
+
+

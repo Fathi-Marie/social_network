@@ -1,6 +1,8 @@
 package com.socialnetwork.socialnetwork.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,15 +11,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.socialnetwork.socialnetwork.enums.VisibilityType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -48,9 +53,15 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility_type")
     private VisibilityType visibilityType = VisibilityType.PUBLIC;
-
+    
     @Column(name = "capacity")
     private Integer capacity = 0;
+
+    @Column(name = "is_paid", nullable = false)
+    private Boolean isPaid = false;
+
+    @Column(name = "price", precision = 10, scale = 2)
+    private BigDecimal price;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -59,6 +70,9 @@ public class Event {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<EventAttendee> eventAttendee;
 
     // Getters and setters
 
@@ -126,6 +140,22 @@ public class Event {
         this.capacity = capacity;
     }
 
+    public Boolean getIsPaid() {
+        return isPaid;
+    }
+
+    public void setIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -141,4 +171,14 @@ public class Event {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+	public List<EventAttendee> getEventAttendee() {
+		return eventAttendee;
+	}
+
+	public void setEventAttendee(List<EventAttendee> eventAttendee) {
+		this.eventAttendee = eventAttendee;
+	}
+    
+    
 }

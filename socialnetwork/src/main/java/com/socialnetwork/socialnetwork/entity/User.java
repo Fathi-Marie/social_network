@@ -2,20 +2,29 @@
 package com.socialnetwork.socialnetwork.entity;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.socialnetwork.socialnetwork.enums.UserRole;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -67,6 +76,16 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Profile profile;
+
+    @Column(name = "suspended_until")
+    private LocalDateTime suspendedUntil;
+
+    @Column(name = "wallet_balance", nullable = false, precision = 10, scale = 2)
+    private BigDecimal walletBalance = BigDecimal.ZERO;
 
     // Getters and setters
 
@@ -127,7 +146,10 @@ public class User {
     }
 
     public String getProfilePictureUrl() {
-        return profilePictureUrl;
+        if (this.profilePictureUrl == null || this.profilePictureUrl.trim().isEmpty()) {
+                return "/img/perso.png";
+            }
+        return this.profilePictureUrl;
     }
 
     public void setProfilePictureUrl(String profilePictureUrl) {
@@ -181,4 +203,30 @@ public class User {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public LocalDateTime getSuspendedUntil() {
+        return suspendedUntil;
+    }
+
+    public void setSuspendedUntil(LocalDateTime suspendedUntil) {
+        this.suspendedUntil = suspendedUntil;
+    }
+
+    public BigDecimal getWalletBalance() {
+        return walletBalance != null ? walletBalance : BigDecimal.ZERO;
+    }
+
+    public void setWalletBalance(BigDecimal walletBalance) {
+        this.walletBalance = walletBalance != null ? walletBalance : BigDecimal.ZERO;
+    }
+
+	public Profile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
+    
+    
 }

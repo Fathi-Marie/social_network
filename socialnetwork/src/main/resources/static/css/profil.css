@@ -318,6 +318,51 @@
     padding: 15px;
 }
 
+.btn-join-project {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--primary), rgba(29, 155, 240, 0.8));
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(29, 155, 240, 0.25);
+}
+
+.btn-join-project:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(29, 155, 240, 0.35);
+}
+
+.btn-join-project:active {
+    transform: translateY(0);
+}
+
+.btn-profil {
+    border: solid 1px var(--primary);
+    text-decoration: none;
+    font-size: 13px;
+    color: white;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-profil:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 8px 27px;
+    background-color: var(--primary);
+}
+
 .type-tag {
     font-size: 0.7rem;
     background: rgba(255, 255, 255, 0.1);
@@ -462,7 +507,7 @@
     }
 }
 
-#editEventModal {
+#editEventModal, #userRecommandationModal, #editHobbyModal, #editCompetenciesModal, #paymentMethodsModal {
     display: none;
     position: fixed;
     inset: 0;
@@ -474,7 +519,7 @@
     padding: 20px;
 }
 
-#editEventModal .card {
+#editEventModal .card, #userRecommandationModal .card, #editHobbyModal .card, #editCompetenciesModal .card, #paymentMethodsModal .card {
     width: 100%;
     max-width: 550px;
     background: #1c2028;
@@ -498,7 +543,7 @@
     color: var(--text-main);
 }
 
-#closeEventEditModal {
+#closeEventEditModal, #closeUserRecommandationModal, #closeHobbyEditModal, #closeCompetenciesEditModal {
     background: transparent;
     border: none;
     color: var(--text-dim);
@@ -507,7 +552,7 @@
     line-height: 1;
 }
 
-#closeEventEditModal:hover {
+#closeEventEditModal:hover, #closeUserRecommandationModal:hover, #closeHobbyEditModal:hover, #closeCompetenciesEditModal:hover{
     color: white;
 }
 
@@ -534,6 +579,42 @@
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
+}
+
+/* Style pour le sélecteur de rôle dans la modale */
+.modal-body .member-item .member-actions select.role-selector {
+    background-color: #2d2d2d !important;
+    color: white !important;
+    border: 1px solid #444;
+}
+
+/* Force le style sur le sélecteur */
+select.role-selector {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; /* Supprime le style Windows/macOS */
+
+    background-color: #1a1a1a !important; /* Ta couleur sombre */
+    background-image: none !important;    /* Supprime les dégradés par défaut */
+    color: #ffffff !important;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #333 !important;
+}
+
+/* Optionnel : Ajoute une petite flèche car appearance:none l'a enlevée */
+.member-actions {
+    position: relative;
+}
+
+.role-selector:focus {
+    border-color: var(--primary-color);
+}
+
+/* Style pour les options à l'intérieur (important pour certains navigateurs) */
+.role-selector option {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
 }
 
 #saveEventEditBtn:hover {
@@ -570,6 +651,32 @@ input:focus, select:focus, textarea:focus {
     background: rgba(29, 155, 240, 0.05);
 }
 
+#editEventModal select,
+#editEventModal .custom-select {
+    background: #1c2028;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+#editEventModal select option,
+#editEventModal .custom-select option {
+    background: #1c2028;
+    color: white;
+}
+
+#editEventModal select:focus,
+#editEventModal .custom-select:focus {
+    border-color: var(--primary);
+    background: #1c2028;
+}
+
 .alert-error {
     background: rgba(255, 68, 68, 0.1);
     color: #ff4444;
@@ -594,7 +701,7 @@ input:focus, select:focus, textarea:focus {
     font-size: 0.9rem;
 }
 
-.btn-event-submit {
+.btn-event-submit, .btn-submit, .btn-competence-submit {
     width: 100%;
     background: var(--primary);
     color: white;
@@ -612,7 +719,7 @@ input:focus, select:focus, textarea:focus {
     margin-top: 10px;
 }
 
-.btn-event-submit:hover {
+.btn-event-submit:hover, .btn-submit:hover {
     background: var(--gold);
     transform: translateY(-2px);
 }
@@ -621,4 +728,124 @@ input:focus, select:focus, textarea:focus {
     .event-form > div {
         grid-template-columns: 1fr !important;
     }
+}
+
+textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+.btn-recommandation {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    background-color: #2196f3;
+    color: white;
+}
+
+.btn-change-password{
+	margin-top: 20px;
+}
+
+/* Moyens de paiement — fermeture & suppression */
+#paymentMethodsModal .pm-modal-close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.35rem;
+	height: 2.35rem;
+	padding: 0;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	background: linear-gradient(165deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+	color: var(--text-dim, #9ca3af);
+	cursor: pointer;
+	transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+#paymentMethodsModal .pm-modal-close:hover {
+	color: #fff;
+	border-color: rgba(239, 68, 68, 0.55);
+	background: rgba(239, 68, 68, 0.12);
+	box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.15);
+	transform: scale(1.06);
+}
+
+#paymentMethodsModal .pm-modal-close:active {
+	transform: scale(0.96);
+}
+
+#paymentMethodsModal .pm-modal-close svg {
+	width: 1.1rem;
+	height: 1.1rem;
+	stroke-width: 2.25;
+}
+
+#paymentMethodsModal .payment-method-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.85rem 1rem;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	background: rgba(0, 0, 0, 0.2);
+}
+
+#paymentMethodsModal .payment-method-row-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	min-width: 0;
+}
+
+#paymentMethodsModal .payment-method-row-info strong {
+	font-size: 0.95rem;
+	color: var(--text-main, #f3f4f6);
+}
+
+#paymentMethodsModal .payment-method-row-meta {
+	font-size: 0.78rem;
+	color: var(--text-dim, #9ca3af);
+	line-height: 1.35;
+}
+
+#paymentMethodsModal .btn-delete-payment-method {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	flex-shrink: 0;
+	padding: 0.45rem 0.85rem;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	border-radius: 9px;
+	border: 1px solid rgba(248, 113, 113, 0.45);
+	background: rgba(248, 113, 113, 0.06);
+	color: #fca5a5;
+	cursor: pointer;
+	transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.12s, box-shadow 0.2s;
+}
+
+#paymentMethodsModal .btn-delete-payment-method svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	stroke-width: 2.1;
+}
+
+#paymentMethodsModal .btn-delete-payment-method:hover {
+	background: rgba(239, 68, 68, 0.18);
+	border-color: rgba(248, 113, 113, 0.85);
+	color: #fecaca;
+	box-shadow: 0 4px 14px rgba(239, 68, 68, 0.18);
+}
+
+#paymentMethodsModal .btn-delete-payment-method:active {
+	transform: scale(0.97);
 }

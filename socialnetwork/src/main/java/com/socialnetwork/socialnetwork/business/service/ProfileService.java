@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.socialnetwork.socialnetwork.business.interfaces.repository.IProfileRepository;
 import com.socialnetwork.socialnetwork.business.interfaces.service.IProfileService;
@@ -48,6 +49,19 @@ public class ProfileService implements IProfileService{
 				profile.get(), 
 			      HttpStatus.OK);
 	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<Profile> getOrCreateProfile(User user) {
+		if (user == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		Optional<Profile> profile = this.repository.findByUser(user);
+		if (profile.isPresent()) {
+			return new ResponseEntity<>(profile.get(), HttpStatus.OK);
+		}
+		return create(user);
+	}
 	
 	@Override
 	public ResponseEntity<Profile> updateProfile(User user, Profile profile) {
@@ -66,12 +80,20 @@ public class ProfileService implements IProfileService{
 			existingProfile.get().setPromoYear(profile.getPromoYear());
 			existingProfile.get().setWebsite(profile.getWebsite());
 			existingProfile.get().setProfession(profile.getProfession());
+			existingProfile.get().setLinkedin(profile.getLinkedin());
+			existingProfile.get().setGithub(profile.getGithub());
 			repository.save(existingProfile.get());
 		}
 		
 		
 		return new ResponseEntity<>(
 			      HttpStatus.OK);
+	}
+
+	@Override
+	public void save(Profile profile) {
+		this.repository.save(profile);
+		
 	}
 	
 }
